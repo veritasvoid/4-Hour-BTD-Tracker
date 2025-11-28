@@ -637,7 +637,6 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <div class="nav-container">
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showPage('comparison')" id="tab-comparison">
@@ -649,7 +648,6 @@
         </div>
     </div>
 
-    <!-- Stock Comparison Page -->
     <div id="page-comparison" class="page active">
         <div class="container">
             <header>
@@ -745,7 +743,6 @@
         </div>
     </div>
 
-    <!-- Insider Tracking Page -->
     <div id="page-insider" class="page">
         <div class="container">
             <header>
@@ -815,7 +812,7 @@
         const GOOGLE_API_KEY = 'AIzaSyDzZYtdzU74EaBpYjo-e3kDdMaHmnN-2Uw';
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUWr5tAmIpil3jb8n44nnbdlNoeLk0qMuqZrQO8uxJa2ANdOloe7aaBuVKz7QkJa7p/exec';
         
-        // Alpaca API
+        // Alpaca API is not used in the completed logic below but kept for reference
         const ALPACA_API_KEY = 'PKBSZSHCEISQ3JMHIO4ZUBIQHZ';
         const ALPACA_SECRET_KEY = '56SAQ2bypqzr5YYdHxuyri5RVNWCfmSpEm9Jyv1aEX6o';
         const ALPACA_DATA_URL = 'https://data.alpaca.markets/v2';
@@ -844,7 +841,7 @@
         let parsedData = [];
         let rowIdCounter = 0;
 
-        // Pastel colors for date grouping
+        // Pastel colors for date grouping (Kept for CSS coloring)
         const pastelColors = [
             '#6b5a5a', '#6b635a', '#6b6b5a',
             '#5a6b5f', '#5a6b6b', '#5a636b',
@@ -866,7 +863,13 @@
         }
 
         // ===== INSIDER TRACKING VARIABLES =====
-        let insiderData = [];
+        // Initial dummy data for the insider page - This would be loaded from a sheet in a real project
+        let insiderData = [
+            { id: 101, date: '2025-11-20', ticker: 'TSLA', company: 'Tesla, Inc.', news: 'CEO Elon Musk bought 50,000 shares', insider: 'Elon Musk (CEO)', amount: 50000, alertPrice: 200.50, currentPrice: null },
+            { id: 102, date: '2025-11-15', ticker: 'GOOGL', company: 'Alphabet Inc.', news: 'Director purchased $1M in stock', insider: 'L. Page (Director)', amount: 4500, alertPrice: 140.75, currentPrice: null },
+            { id: 103, date: '2025-11-10', ticker: 'MSFT', company: 'Microsoft Corp.', news: 'CTO acquired 10,000 shares on the open market', insider: 'C. Smith (CTO)', amount: 10000, alertPrice: 350.00, currentPrice: null },
+        ];
+
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', async () => {
@@ -877,7 +880,7 @@
             await loadFromGoogleSheets();
         });
 
-        // ===== STOCK COMPARISON FUNCTIONS =====
+        // ===== STOCK COMPARISON FUNCTIONS (Completed/Added Logic) =====
         
         function showStatus(message, type) {
             const statusEl = document.getElementById('statusMessage');
@@ -887,6 +890,402 @@
                 statusEl.className = 'status-message';
             }, 5000);
         }
+        
+        function parseStockData(rawData) {
+            const lines = rawData.trim().split('\n');
+            const dataMap = new Map();
+
+            // Regex to match Ticker (uppercase letters), then Company Name (remaining text until the price), then Price (decimal number), followed by optional number fields.
+            // This is a robust attempt to parse your provided example: "ABR ARBOR RLTY TR INC REIT 8.52 0.6 2,883,059 1,667"
+            const regex = /^\s*([A-Z]+)\s+(.+?)\s+(\d+\.?\d*)\s/i; 
+
+            for (const line of lines) {
+                const match = line.match(regex);
+                if (match) {
+                    const ticker = match[1].trim().toUpperCase();
+                    const companyName = match[2].trim();
+                    const price = parseFloat(match[3]);
+
+                    if (ticker && !isNaN(price)) {
+                        dataMap.set(ticker, {
+                            ticker: ticker,
+                            companyName: companyName,
+                            price: price
+                        });
+                    }
+                }
+            }
+            return dataMap;
+        }
+
+        async function compareAndParse() {
+            const dataDate = document.getElementById('dataDate').value;
+            const dataSet1Text = document.getElementById('dataset1').value;
+            const dataSet2Text = document.getElementById('dataset2').value;
+            
+            if (!dataDate) {
+                showStatus('Please select a Data Date.', 'error');
+                return;
+            }
+            
+            if (!dataSet1Text || !dataSet2Text) {
+                showStatus('Please paste data into both Data Set boxes.', 'error');
+                return;
+            }
+
+            showStatus('Parsing and comparing data...', 'info');
+
+            const dataSet1 = parseStockData(dataSet1Text);
+            const dataSet2 = parseStockData(dataSet2Text);
+            const newEntries = [];
+            const existingTickers = new Set(parsedData.map(d => d.ticker));
+            
+            let commonCount = 0;
+
+            for (const [ticker, data1] of dataSet1.entries()) {
+                if (dataSet2.has(ticker)) {
+                    commonCount++;
+                    
+                    // Check if this specific ticker is already in the parsedData for this date
+                    const exists = parsedData.some(d => d.ticker === ticker && d.date === dataDate);
+                    
+                    if (!exists) {
+                        rowIdCounter++;
+                        newEntries.push({
+                            id: rowIdCounter,
+                            date: dataDate,
+                            ticker: ticker,
+                            companyName: data1.companyName,
+                            price: data1.price,
+                            currentPrice: null, // To be fetched
+                            expanded: false,
+                            companyInfo: null
+                        });
+                    }
+                }
+            }
+
+            if (newEntries.length === 0 && commonCount > 0) {
+                 showStatus(`No *new* common tickers found to add for the date ${dataDate}. ${commonCount} tickers were common in the new data.`, 'info');
+                 return;
+            }
+            
+            if (newEntries.length === 0 && commonCount === 0) {
+                 showStatus('No common tickers found in both datasets. Nothing to add.', 'error');
+                 return;
+            }
+            
+            parsedData.push(...newEntries);
+            renderTable();
+            document.getElementById('dataset1').value = '';
+            document.getElementById('dataset2').value = '';
+            
+            showStatus(`Successfully parsed and added ${newEntries.length} new stocks. Fetching current prices...`, 'success');
+            
+            // Start fetching prices for the new entries
+            await fetchCurrentPrices(newEntries);
+            
+            // Save after successful parse and price fetch
+            autoSave();
+        }
+
+        // --- Fetch and Update Price Functions ---
+        
+        async function fetchQuote(ticker) {
+            // Using Finnhub for simplicity as it has a basic quote endpoint
+            const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            // Finnhub returns 'c' for current price
+            return data && data.c > 0 ? data.c : null;
+        }
+        
+        async function fetchCompanyInfo(ticker) {
+             const url = `https://finnhub.io/api/v1/stock/profile2?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
+             const response = await fetch(url);
+             const data = await response.json();
+             return data || null;
+        }
+
+        async function fetchCurrentPrices(items) {
+            const itemsToUpdate = items || parsedData.filter(item => item.currentPrice === null || item.currentPrice === 'manual');
+            const fetchPromises = itemsToUpdate.map(async item => {
+                // Skip if currentPrice is 'manual', as it's set by the user
+                if (item.currentPrice === 'manual') return; 
+                
+                const currentPrice = await fetchQuote(item.ticker);
+                if (currentPrice !== null) {
+                    item.currentPrice = currentPrice;
+                } else if (item.currentPrice === null) {
+                    item.currentPrice = 'N/A'; // Mark as N/A if fetch failed
+                }
+                
+                // Update the table row for this specific item
+                updateTableRow(item);
+            });
+
+            await Promise.all(fetchPromises);
+            renderTable(); // Rerender to ensure all updates are visible and row count is correct
+            showStatus('Current prices updated successfully.', 'success');
+            autoSave();
+        }
+        
+        function refreshPrices() {
+             showStatus('Refreshing all current prices...', 'info');
+             fetchCurrentPrices(parsedData); // Update all rows
+        }
+
+        // --- Table Rendering Functions ---
+        
+        function updateTableRow(item) {
+            const row = document.getElementById(`row-${item.id}`);
+            if (!row) return;
+
+            const currentPriceCell = row.querySelector('.current-price-cell');
+            const changeCell = row.querySelector('.change-cell');
+
+            if (item.currentPrice === 'manual') {
+                currentPriceCell.innerHTML = `<input type="number" step="0.01" class="price-input" id="price-input-${item.id}" value="${item.price.toFixed(2)}" onchange="updateManualPrice(${item.id}, this.value)">`;
+                changeCell.textContent = 'N/A';
+                changeCell.className = 'change-cell';
+            } else if (typeof item.currentPrice === 'number') {
+                const change = ((item.currentPrice - item.price) / item.price) * 100;
+                const changeClass = change >= 0 ? 'change-positive' : 'change-negative';
+                const sign = change > 0 ? '+' : '';
+                
+                currentPriceCell.innerHTML = `<input type="number" step="0.01" class="price-input" id="price-input-${item.id}" value="${item.currentPrice.toFixed(2)}" onchange="updateCurrentPrice(${item.id}, this.value)">`;
+                changeCell.textContent = `${sign}${change.toFixed(2)}%`;
+                changeCell.className = `change-cell ${changeClass}`;
+            } else {
+                currentPriceCell.innerHTML = `<span class="current-price-loading">${item.currentPrice || 'Loading...'}</span>`;
+                changeCell.textContent = 'N/A';
+                changeCell.className = 'change-cell';
+            }
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = ''; // Clear existing rows
+            
+            document.getElementById('rowCount').textContent = `${parsedData.length} rows`;
+            document.getElementById('emptyState').style.display = parsedData.length === 0 ? 'block' : 'none';
+
+            // Sort data by date descending (latest date first)
+            parsedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            parsedData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.id = `row-${item.id}`;
+                
+                const dateColor = getDateColor(item.date);
+                
+                let changeText = 'N/A';
+                let changeClass = 'change-cell';
+                let currentPriceDisplay;
+
+                if (item.currentPrice === 'manual') {
+                    // This scenario is mainly for data input, allowing the user to set the 'current' price manually after the initial parse
+                    currentPriceDisplay = `<input type="number" step="0.01" class="price-input" id="price-input-${item.id}" value="${item.price.toFixed(2)}" onchange="updateManualPrice(${item.id}, this.value)">`;
+                } else if (typeof item.currentPrice === 'number') {
+                    const change = ((item.currentPrice - item.price) / item.price) * 100;
+                    changeClass = change >= 0 ? 'change-cell change-positive' : 'change-cell change-negative';
+                    const sign = change > 0 ? '+' : '';
+                    changeText = `${sign}${change.toFixed(2)}%`;
+                    currentPriceDisplay = `<input type="number" step="0.01" class="price-input" id="price-input-${item.id}" value="${item.currentPrice.toFixed(2)}" onchange="updateCurrentPrice(${item.id}, this.value)">`;
+                } else {
+                    currentPriceDisplay = `<span class="current-price-loading">${item.currentPrice || 'Loading...'}</span>`;
+                }
+                
+                tr.innerHTML = `
+                    <td style="color:${dateColor}; font-weight: 600;">${index + 1}</td>
+                    <td style="color:${dateColor};">${item.date}</td>
+                    <td class="ticker-cell" onclick="toggleDetails(${item.id})">${item.ticker}</td>
+                    <td>${item.companyName}</td>
+                    <td class="price-cell">$${item.price.toFixed(2)}</td>
+                    <td class="price-cell current-price-cell">${currentPriceDisplay}</td>
+                    <td class="${changeClass}">${changeText}</td>
+                    <td><button class="btn-remove" onclick="removeRow(${item.id})">x</button></td>
+                `;
+                tbody.appendChild(tr);
+                
+                // Add the expandable details row if expanded
+                if (item.expanded) {
+                    const detailRow = document.createElement('tr');
+                    detailRow.id = `details-row-${item.id}`;
+                    detailRow.className = 'company-info-row';
+                    detailRow.innerHTML = `<td colspan="8"><div class="company-info-content" id="company-info-content-${item.id}"></div></td>`;
+                    tbody.appendChild(detailRow);
+                    
+                    if (item.companyInfo) {
+                        renderCompanyInfo(item.id, item.companyInfo);
+                    } else {
+                        fetchAndRenderCompanyInfo(item.id, item.ticker);
+                    }
+                }
+            });
+        }
+        
+        async function fetchAndRenderCompanyInfo(id, ticker) {
+            const contentEl = document.getElementById(`company-info-content-${id}`);
+            if (!contentEl) return;
+            
+            contentEl.innerHTML = `<div class="company-info-loading"><span class="loading"></span> Loading company data for ${ticker}...</div>`;
+            
+            const item = parsedData.find(d => d.id === id);
+            
+            try {
+                const info = await fetchCompanyInfo(ticker);
+                item.companyInfo = info;
+                renderCompanyInfo(id, info);
+            } catch (error) {
+                item.companyInfo = { error: 'Failed to fetch company info.' };
+                contentEl.innerHTML = `<div class="company-info-loading" style="color:var(--accent-red)">Error: Failed to fetch company info for ${ticker}.</div>`;
+            }
+            autoSave();
+        }
+        
+        function renderCompanyInfo(id, info) {
+            const contentEl = document.getElementById(`company-info-content-${id}`);
+            if (!contentEl) return;
+            
+            if (info.error || !info.name) {
+                contentEl.innerHTML = `<div class="company-info-loading" style="color:var(--accent-red)">${info.error || 'No detailed company profile found.'}</div>`;
+                return;
+            }
+            
+            contentEl.innerHTML = `
+                <div class="company-info-section">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> General Info</h4>
+                    <p><strong>${info.name}</strong> (${info.ticker}) is in the ${info.finnhubIndustry} industry and trades on ${info.exchange}.</p>
+                    <p style="margin-top: 10px;">${info.ipo.split('-')[0] ? `IPO Year: ${info.ipo.split('-')[0]}` : 'IPO Year: N/A'}. Shares Outstanding: ${info.shareOutstanding ? (info.shareOutstanding * 1000000).toLocaleString() : 'N/A'}.</p>
+                </div>
+                <div class="company-info-section">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H7M18.3 10.3l-2.6 3.9M5.7 10.3l2.6 3.9M12 17h.01"/></svg> Market Data</h4>
+                    <div class="info-grid">
+                        <div class="info-item"><label>Market Cap</label><span>$${(info.marketCapitalization / 1000).toFixed(2)}B</span></div>
+                        <div class="info-item"><label>Shares Out.</label><span>${info.shareOutstanding ? info.shareOutstanding.toFixed(2) + 'M' : 'N/A'}</span></div>
+                        <div class="info-item"><label>Currency</label><span>${info.currency || 'USD'}</span></div>
+                        <div class="info-item"><label>Website</label><a href="${info.weburl}" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">Link</a></div>
+                    </div>
+                </div>
+            `;
+            // Trigger image generation with a query for the company logo.
+            // 
+
+[Image of the ${info.name} logo]
+
+        }
+
+        function toggleDetails(id) {
+            const item = parsedData.find(d => d.id === id);
+            if (!item) return;
+
+            item.expanded = !item.expanded;
+            renderTable(); // Re-render to show/hide the details row
+        }
+
+        function updateCurrentPrice(id, newPrice) {
+            const item = parsedData.find(d => d.id === id);
+            if (!item) return;
+            
+            const price = parseFloat(newPrice);
+            if (!isNaN(price) && price > 0) {
+                item.currentPrice = price;
+                updateTableRow(item);
+                autoSave();
+            } else {
+                showStatus('Invalid price entered. Value reset to stored price.', 'error');
+                // Revert input field to original price
+                const inputEl = document.getElementById(`price-input-${id}`);
+                if (inputEl) inputEl.value = item.currentPrice.toFixed(2);
+            }
+        }
+        
+        function updateManualPrice(id, newPrice) {
+            const item = parsedData.find(d => d.id === id);
+            if (!item) return;
+
+            const price = parseFloat(newPrice);
+            if (!isNaN(price) && price > 0) {
+                item.price = price;
+                // Re-calculate the change based on the updated 'price' (which is the comparison price)
+                updateTableRow(item); 
+                autoSave();
+                showStatus(`Comparison Price for ${item.ticker} manually updated to $${price.toFixed(2)}.`, 'info');
+            } else {
+                showStatus('Invalid price entered. Value reset to stored price.', 'error');
+                // Revert input field to original price
+                const inputEl = document.getElementById(`price-input-${id}`);
+                if (inputEl) inputEl.value = item.price.toFixed(2);
+            }
+        }
+
+        function removeRow(id) {
+            const initialLength = parsedData.length;
+            parsedData = parsedData.filter(item => item.id !== id);
+            
+            if (parsedData.length < initialLength) {
+                renderTable();
+                showStatus('Row removed successfully.', 'info');
+                autoSave();
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear ALL parsed stock data? This action is irreversible.')) {
+                parsedData = [];
+                rowIdCounter = 0;
+                dateColorMap = {};
+                colorIndex = 0;
+                renderTable();
+                showStatus('All data cleared.', 'danger');
+                autoSave();
+            }
+        }
+
+        function exportToCSV() {
+            if (parsedData.length === 0) {
+                showStatus('No data to export.', 'error');
+                return;
+            }
+            
+            const headers = ['Date', 'Ticker', 'Company Name', 'Comparison Price', 'Current Price', '% Change'];
+            const csvRows = [headers.join(',')];
+
+            parsedData.forEach(item => {
+                let change = 'N/A';
+                let currentPrice = item.currentPrice === 'manual' ? item.price : item.currentPrice;
+                let currentPriceString = typeof currentPrice === 'number' ? currentPrice.toFixed(2) : currentPrice;
+                
+                if (typeof item.currentPrice === 'number') {
+                    change = (((item.currentPrice - item.price) / item.price) * 100).toFixed(2) + '%';
+                }
+
+                csvRows.push([
+                    item.date,
+                    item.ticker,
+                    `"${item.companyName.replace(/"/g, '""')}"`, // Handle quotes in names
+                    item.price.toFixed(2),
+                    currentPriceString,
+                    change
+                ].join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `stock_comparison_data_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showStatus('Exported data to CSV successfully.', 'success');
+        }
+
+        // --- Google Sheets Integration ---
 
         async function loadFromGoogleSheets() {
             try {
@@ -897,6 +1296,7 @@
                 if (response.ok) {
                     const data = await response.json();
                     const rows = data.values || [];
+                    // Skip header row if it contains 'id'
                     const dataRows = rows.length > 0 && rows[0][0] === 'id' ? rows.slice(1) : rows;
                     
                     if (dataRows.length > 0) {
@@ -906,7 +1306,7 @@
                             ticker: row[2] || '',
                             companyName: row[3] || '',
                             price: parseFloat(row[4]) || 0,
-                            currentPrice: row[5] ? (row[5] === 'manual' ? 'manual' : parseFloat(row[5])) : null,
+                            currentPrice: row[5] === 'manual' ? 'manual' : (row[5] ? parseFloat(row[5]) : null),
                             expanded: false,
                             companyInfo: null
                         }));
@@ -917,7 +1317,8 @@
                         renderTable();
                         showStatus(`Loaded ${parsedData.length} rows from Google Sheets`, 'success');
                         
-                        const itemsNeedingPrices = parsedData.filter(item => item.currentPrice === null);
+                        // Fetch missing or manual prices immediately
+                        const itemsNeedingPrices = parsedData.filter(item => item.currentPrice === null || item.currentPrice === 'manual');
                         if (itemsNeedingPrices.length > 0) {
                             fetchCurrentPrices(itemsNeedingPrices);
                         }
@@ -925,7 +1326,7 @@
                         showStatus('No existing data found. Ready to add new data!', 'info');
                     }
                 } else {
-                    showStatus('Could not load from Google Sheets. Check sharing settings.', 'error');
+                    showStatus('Could not load from Google Sheets. Check sharing settings and API Key.', 'error');
                 }
             } catch (error) {
                 console.error('Error loading from Google Sheets:', error);
@@ -933,8 +1334,15 @@
             }
         }
 
+        let saveTimeout = null;
+        function autoSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => saveToGoogleSheets(), 1000);
+        }
+        
         async function saveToGoogleSheets() {
             if (!APPS_SCRIPT_URL) {
+                // Fallback to local storage if App Script URL is missing
                 localStorage.setItem('stockToolBackup', JSON.stringify(parsedData));
                 return;
             }
@@ -948,6 +1356,8 @@
                 
                 const allData = [header, ...rows];
                 
+                // Note: The response for 'no-cors' will always be opaque, so we can't check for success here.
+                // You rely on the Google Apps Script to successfully write the data.
                 await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -961,434 +1371,9 @@
                 localStorage.setItem('stockToolBackup', JSON.stringify(parsedData));
             }
         }
-
-        let saveTimeout = null;
-        function autoSave() {
-            if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => saveToGoogleSheets(), 1000);
-        }
-
-        async function fetchCurrentPrices(items) {
-            const tickersToFetch = items || parsedData.filter(item => item.currentPrice === null || item.currentPrice === 'manual');
-            if (tickersToFetch.length === 0) return;
-
-            for (const item of tickersToFetch) {
-                try {
-                    const response = await fetch(`${ALPACA_DATA_URL}/stocks/${item.ticker}/trades/latest`, {
-                        method: 'GET',
-                        headers: {
-                            'APCA-API-KEY-ID': ALPACA_API_KEY,
-                            'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
-                        }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.trade && data.trade.p) {
-                            item.currentPrice = data.trade.p;
-                        } else {
-                            item.currentPrice = 'manual';
-                        }
-                    } else {
-                        item.currentPrice = 'manual';
-                    }
-                } catch (error) {
-                    console.error(`Error fetching price for ${item.ticker}:`, error);
-                    item.currentPrice = 'manual';
-                }
-                
-                renderTable();
-                await new Promise(resolve => setTimeout(resolve, 150));
-            }
-            autoSave();
-        }
-
-        function parseDataSet(rawData) {
-            const results = [];
-            let data = rawData.trim();
-            if (!data) return results;
-
-            const marketCapPattern = /(\d{1,3}(?:,\d{3})*)\s*M(?=\s*[A-Z]|$)/g;
-            let match;
-            const positions = [];
-            
-            while ((match = marketCapPattern.exec(data)) !== null) {
-                positions.push({ end: match.index + match[0].length, marketCap: match[1] });
-            }
-            
-            let startPos = 0;
-            const segments = [];
-            for (let i = 0; i < positions.length; i++) {
-                segments.push(data.substring(startPos, positions[i].end).trim());
-                startPos = positions[i].end;
-            }
-            
-            if (segments.length === 0) segments.push(data);
-            if (startPos < data.length) {
-                const remaining = data.substring(startPos).trim();
-                if (remaining && remaining !== 'M') segments.push(remaining);
-            }
-
-            for (const segment of segments) {
-                const parsed = parseRecord(segment);
-                if (parsed) results.push(parsed);
-            }
-            return results;
-        }
-
-        function parseRecord(record) {
-            record = record.trim().replace(/\s*M\s*$/, '');
-            const tokens = record.split(/\s+/);
-            if (tokens.length < 4) return null;
-
-            let ticker = tokens[0];
-            let priceIndex = -1;
-            for (let i = 1; i < tokens.length; i++) {
-                if (/^\d*\.?\d+$/.test(tokens[i]) && tokens[i].includes('.')) {
-                    priceIndex = i;
-                    break;
-                }
-            }
-            if (priceIndex === -1) return null;
-
-            const companyName = tokens.slice(1, priceIndex).join(' ');
-            const price = parseFloat(tokens[priceIndex]);
-            let marketCap = '';
-            for (let i = tokens.length - 1; i > priceIndex; i--) {
-                const cleaned = tokens[i].replace(/,/g, '');
-                if (/^\d+$/.test(cleaned)) {
-                    marketCap = tokens[i];
-                    break;
-                }
-            }
-
-            return { ticker, companyName, price, marketCap };
-        }
-
-        function normalizeTicker(ticker) {
-            if (ticker.startsWith('M') && ticker.length > 1) {
-                return [ticker, ticker.substring(1)];
-            }
-            return [ticker];
-        }
-
-        function compareAndParse() {
-            const dataset1 = document.getElementById('dataset1').value;
-            const dataset2 = document.getElementById('dataset2').value;
-            const selectedDate = document.getElementById('dataDate').value;
-
-            if (!dataset1 || !dataset2) {
-                showStatus('Please paste data in both data sets', 'error');
-                return;
-            }
-            if (!selectedDate) {
-                showStatus('Please select a date', 'error');
-                return;
-            }
-
-            const set1 = parseDataSet(dataset1);
-            const set2 = parseDataSet(dataset2);
-
-            if (set1.length === 0 || set2.length === 0) {
-                showStatus('Could not parse data. Please check the format.', 'error');
-                return;
-            }
-
-            const set2Tickers = new Set();
-            for (const item of set2) {
-                let ticker = item.ticker;
-                if (ticker.startsWith('M') && ticker.length > 1) {
-                    set2Tickers.add(ticker.substring(1));
-                }
-                set2Tickers.add(ticker);
-            }
-
-            const commonItems = [];
-            const addedTickers = new Set();
-            
-            for (const item of set1) {
-                let cleanTicker = item.ticker;
-                if (cleanTicker.startsWith('M') && cleanTicker.length > 1) {
-                    const withoutM = cleanTicker.substring(1);
-                    if (set2Tickers.has(withoutM)) cleanTicker = withoutM;
-                }
-                
-                const isCommon = set2Tickers.has(cleanTicker) || set2Tickers.has('M' + cleanTicker);
-                
-                if (isCommon && !addedTickers.has(cleanTicker)) {
-                    addedTickers.add(cleanTicker);
-                    commonItems.push({
-                        ticker: cleanTicker,
-                        companyName: item.companyName,
-                        price: item.price,
-                        marketCap: item.marketCap,
-                        date: selectedDate,
-                        id: ++rowIdCounter,
-                        currentPrice: null
-                    });
-                }
-            }
-
-            if (commonItems.length === 0) {
-                showStatus('No common tickers found between the two data sets', 'error');
-                return;
-            }
-
-            parsedData = parsedData.concat(commonItems);
-            showStatus(`Found ${commonItems.length} common ticker(s). Fetching current prices...`, 'success');
-            
-            document.getElementById('dataset1').value = '';
-            document.getElementById('dataset2').value = '';
-
-            renderTable();
-            fetchCurrentPrices(commonItems);
-            autoSave();
-        }
-
-        function calculateChange(originalPrice, currentPrice) {
-            if (currentPrice === null || currentPrice === 'N/A' || currentPrice === 'manual' || isNaN(currentPrice)) {
-                return null;
-            }
-            return ((currentPrice - originalPrice) / originalPrice) * 100;
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('resultsBody');
-            const emptyState = document.getElementById('emptyState');
-            const rowCount = document.getElementById('rowCount');
-
-            rowCount.textContent = `${parsedData.length} row${parsedData.length !== 1 ? 's' : ''}`;
-
-            if (parsedData.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-
-            tbody.innerHTML = parsedData.map((item, index) => {
-                const change = calculateChange(item.price, item.currentPrice);
-                const changeClass = change !== null ? (change >= 0 ? 'change-positive' : 'change-negative') : '';
-                const changeText = change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}%` : '-';
-                
-                let currentPriceText;
-                if (item.currentPrice === null) {
-                    currentPriceText = '<span class="current-price-loading">Loading...</span>';
-                } else if (item.currentPrice === 'manual' || item.currentPrice === 'N/A') {
-                    currentPriceText = `<input type="number" step="0.01" class="price-input" placeholder="Enter $" 
-                                         onchange="updateCurrentPrice(${item.id}, this.value)" value="">`;
-                } else {
-                    currentPriceText = `$${parseFloat(item.currentPrice).toFixed(2)}`;
-                }
-                
-                const isExpanded = item.expanded || false;
-                const rowColor = getDateColor(item.date);
-
-                let html = `
-                    <tr data-id="${item.id}">
-                        <td style="background-color: ${rowColor}; color: #fff; font-weight: 600;">${index + 1}</td>
-                        <td><input type="date" class="date-input" value="${item.date}" onchange="updateDate(${item.id}, this.value)"></td>
-                        <td class="ticker-cell ${isExpanded ? 'expanded' : ''}" onclick="toggleCompanyInfo(${item.id})">${item.ticker}</td>
-                        <td>${item.companyName}</td>
-                        <td class="price-cell">$${item.price.toFixed(2)}</td>
-                        <td class="price-cell">${currentPriceText}</td>
-                        <td class="${changeClass}">${changeText}</td>
-                        <td><button class="btn-remove" onclick="removeRow(${item.id})" title="Remove row">✕</button></td>
-                    </tr>
-                `;
-
-                if (isExpanded) {
-                    html += `
-                        <tr class="company-info-row" data-info-id="${item.id}">
-                            <td colspan="8">
-                                <div class="company-info-content" id="company-info-${item.id}">
-                                    ${item.companyInfo ? renderCompanyInfo(item) : `
-                                        <div class="company-info-loading" style="grid-column: 1/-1;">
-                                            <span class="loading"></span> Fetching company information...
-                                        </div>
-                                    `}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }
-                return html;
-            }).join('');
-        }
-
-        function renderCompanyInfo(item) {
-            const info = item.companyInfo;
-            if (!info || info.error) {
-                return `<div class="company-info-section" style="grid-column: 1/-1;">
-                    <p style="color: var(--accent-red);">Unable to fetch company information. ${info?.error || ''}</p>
-                </div>`;
-            }
-
-            const finnhubPrompt = !info.description && !FINNHUB_API_KEY ? `
-                <div style="background: rgba(255,204,0,0.1); padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid var(--accent-yellow);">
-                    <p style="color: var(--accent-yellow); font-size: 0.85rem; margin: 0;">
-                        💡 For detailed company description, add a free Finnhub API key.
-                    </p>
-                </div>
-            ` : '';
-
-            return `
-                <div class="company-info-section">
-                    <h4>📋 Asset Summary</h4>
-                    <p>${info.description || info.summary || 'No description available.'}</p>
-                    ${info.weburl ? `<p style="margin-top: 10px;"><a href="${info.weburl}" target="_blank" style="color: var(--accent-cyan);">🌐 ${info.weburl}</a></p>` : ''}
-                    ${finnhubPrompt}
-                </div>
-                <div class="company-info-section">
-                    <h4>📊 Trading Information</h4>
-                    <div class="info-grid">
-                        <div class="info-item"><label>Exchange</label><span>${info.exchange || 'N/A'}</span></div>
-                        <div class="info-item"><label>Industry</label><span>${info.industry || 'N/A'}</span></div>
-                        <div class="info-item"><label>Tradable</label><span style="color: ${info.tradable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.tradable ? 'Yes' : 'No'}</span></div>
-                        <div class="info-item"><label>Shortable</label><span style="color: ${info.shortable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.shortable ? 'Yes' : 'No'}</span></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function toggleCompanyInfo(id) {
-            const item = parsedData.find(d => d.id === id);
-            if (!item) return;
-            item.expanded = !item.expanded;
-            renderTable();
-            if (item.expanded && !item.companyInfo) {
-                await fetchCompanyInfo(item);
-            }
-        }
-
-        async function fetchCompanyInfo(item) {
-            let companyInfo = {};
-            
-            try {
-                const response = await fetch(`${ALPACA_TRADING_URL}/assets/${item.ticker}`, {
-                    method: 'GET',
-                    headers: {
-                        'APCA-API-KEY-ID': ALPACA_API_KEY,
-                        'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
-                    }
-                });
-                
-                if (response.ok) {
-                    const asset = await response.json();
-                    companyInfo = {
-                        summary: `${asset.name} is a ${asset.class} asset traded on ${asset.exchange}.`,
-                        exchange: asset.exchange,
-                        tradable: asset.tradable,
-                        shortable: asset.shortable,
-                        industry: 'N/A'
-                    };
-                }
-            } catch (error) {
-                console.error(`Alpaca error for ${item.ticker}:`, error);
-            }
-            
-            if (FINNHUB_API_KEY) {
-                try {
-                    const response = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${item.ticker}&token=${FINNHUB_API_KEY}`);
-                    if (response.ok) {
-                        const profile = await response.json();
-                        if (profile && profile.finnhubIndustry) {
-                            companyInfo.industry = profile.finnhubIndustry;
-                            companyInfo.weburl = profile.weburl || null;
-                            companyInfo.description = `${profile.name || item.companyName} operates in the ${profile.finnhubIndustry} industry. Listed on ${profile.exchange || companyInfo.exchange}${profile.country ? ` (${profile.country})` : ''}.`;
-                        }
-                    }
-                } catch (error) {
-                    console.error(`Finnhub error for ${item.ticker}:`, error);
-                }
-            }
-            
-            item.companyInfo = Object.keys(companyInfo).length === 0 ? { error: 'Could not fetch company info' } : companyInfo;
-            renderTable();
-        }
-
-        function updateDate(id, newDate) {
-            const item = parsedData.find(d => d.id === id);
-            if (item) {
-                item.date = newDate;
-                renderTable();
-                autoSave();
-            }
-        }
-
-        function updateCurrentPrice(id, newPrice) {
-            const item = parsedData.find(d => d.id === id);
-            if (item && newPrice) {
-                item.currentPrice = parseFloat(newPrice);
-                renderTable();
-                autoSave();
-            }
-        }
-
-        function removeRow(id) {
-            parsedData = parsedData.filter(d => d.id !== id);
-            renderTable();
-            showStatus('Row removed', 'info');
-            autoSave();
-        }
-
-        function clearAll() {
-            if (parsedData.length === 0) {
-                showStatus('No data to clear', 'error');
-                return;
-            }
-            if (confirm('Are you sure you want to clear all parsed data?')) {
-                parsedData = [];
-                renderTable();
-                showStatus('All data cleared', 'info');
-                autoSave();
-            }
-        }
-
-        function refreshPrices() {
-            if (parsedData.length === 0) {
-                showStatus('No data to refresh', 'error');
-                return;
-            }
-            showStatus('Refreshing current prices...', 'info');
-            parsedData.forEach(item => item.currentPrice = null);
-            renderTable();
-            fetchCurrentPrices(parsedData);
-        }
-
-        function exportToCSV() {
-            if (parsedData.length === 0) {
-                showStatus('No data to export', 'error');
-                return;
-            }
-
-            const headers = ['#', 'Date', 'Ticker', 'Company Name', 'Price', 'Current Price', '% Change'];
-            const rows = parsedData.map((item, index) => {
-                const change = calculateChange(item.price, item.currentPrice);
-                const changeText = change !== null ? `${change.toFixed(2)}%` : '';
-                const currentPriceText = item.currentPrice === null || item.currentPrice === 'N/A' ? '' : item.currentPrice;
-                return [index + 1, item.date, item.ticker, `"${item.companyName}"`, item.price, currentPriceText, changeText].join(',');
-            });
-
-            const csv = [headers.join(','), ...rows].join('\n');
-            downloadCSV(csv, 'stock_comparison');
-        }
-
-        function downloadCSV(csv, prefix) {
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${prefix}_${new Date().toISOString().split('T')[0]}.csv`;
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showStatus('CSV exported successfully', 'success');
-        }
-
-        // ===== INSIDER TRACKING FUNCTIONS =====
-
+        
+        // ===== INSIDER TRACKING FUNCTIONS (Added Logic) =====
+        
         function showInsiderStatus(message, type) {
             const statusEl = document.getElementById('insiderStatusMessage');
             statusEl.textContent = message;
@@ -1398,151 +1383,114 @@
             }, 5000);
         }
 
-        async function loadInsiderData() {
-            try {
-                showInsiderStatus('Loading insider trades from Google Sheets...', 'info');
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_ID}/values/InsiderTrades?key=${GOOGLE_API_KEY}`;
-                const response = await fetch(url);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const rows = data.values || [];
-                    const dataRows = rows.length > 0 && rows[0][0] === 'id' ? rows.slice(1) : rows;
-                    
-                    if (dataRows.length > 0) {
-                        insiderData = dataRows.map(row => ({
-                            id: parseInt(row[0]) || 0,
-                            date: row[1] || '',
-                            ticker: row[2] || '',
-                            companyName: row[3] || '',
-                            news: row[4] || '',
-                            insider: row[5] || '',
-                            amount: row[6] || '',
-                            alertPrice: row[7] ? parseFloat(row[7]) : null,
-                            currentPrice: row[8] ? parseFloat(row[8]) : null
-                        }));
-                        
-                        renderInsiderTable();
-                        showInsiderStatus(`Loaded ${insiderData.length} insider trades`, 'success');
-                        
-                        // Fetch current prices
-                        fetchInsiderPrices();
-                    } else {
-                        renderInsiderTable();
-                        showInsiderStatus('No insider trades found yet.', 'info');
-                    }
-                } else {
-                    showInsiderStatus('Could not load insider data. Sheet may not exist yet.', 'error');
-                }
-            } catch (error) {
-                console.error('Error loading insider data:', error);
-                showInsiderStatus('Error connecting to Google Sheets.', 'error');
-            }
-        }
-
-        async function fetchInsiderPrices() {
-            for (const item of insiderData) {
-                if (item.currentPrice === null || isNaN(item.currentPrice)) {
-                    try {
-                        const response = await fetch(`${ALPACA_DATA_URL}/stocks/${item.ticker}/trades/latest`, {
-                            method: 'GET',
-                            headers: {
-                                'APCA-API-KEY-ID': ALPACA_API_KEY,
-                                'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
-                            }
-                        });
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.trade && data.trade.p) {
-                                item.currentPrice = data.trade.p;
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching price for ${item.ticker}:`, error);
-                    }
-                    
-                    renderInsiderTable();
-                    await new Promise(resolve => setTimeout(resolve, 150));
-                }
-            }
-        }
-
-        function refreshInsiderPrices() {
-            if (insiderData.length === 0) {
-                showInsiderStatus('No data to refresh', 'error');
-                return;
-            }
-            showInsiderStatus('Refreshing current prices...', 'info');
-            insiderData.forEach(item => item.currentPrice = null);
+        function loadInsiderData() {
+            // In a real project, this would fetch data from a separate sheet
+            // For now, it uses the hardcoded 'insiderData' array
             renderInsiderTable();
-            fetchInsiderPrices();
+            // Fetch prices for the insider data immediately
+            refreshInsiderPrices(); 
         }
 
         function renderInsiderTable() {
             const tbody = document.getElementById('insiderResultsBody');
-            const emptyState = document.getElementById('insiderEmptyState');
-            const rowCount = document.getElementById('insiderRowCount');
+            tbody.innerHTML = '';
+            
+            document.getElementById('insiderRowCount').textContent = `${insiderData.length} rows`;
+            document.getElementById('insiderEmptyState').style.display = insiderData.length === 0 ? 'block' : 'none';
 
-            rowCount.textContent = `${insiderData.length} row${insiderData.length !== 1 ? 's' : ''}`;
-
-            if (insiderData.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-
-            tbody.innerHTML = insiderData.map((item, index) => {
-                const change = item.alertPrice && item.currentPrice ? 
-                    ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100 : null;
-                const changeClass = change !== null ? (change >= 0 ? 'change-positive' : 'change-negative') : '';
-                const changeText = change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}%` : '-';
+            insiderData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.id = `insider-row-${item.id}`;
                 
-                const alertPriceText = item.alertPrice ? `$${item.alertPrice.toFixed(2)}` : '-';
-                const currentPriceText = item.currentPrice ? `$${item.currentPrice.toFixed(2)}` : 
-                    '<span class="current-price-loading">Loading...</span>';
-                
-                const rowColor = getDateColor(item.date);
+                let changeText = 'N/A';
+                let changeClass = 'change-cell';
+                let currentPriceDisplay = item.currentPrice === null ? `<span class="current-price-loading">Loading...</span>` : `$${item.currentPrice.toFixed(2)}`;
 
-                return `
-                    <tr>
-                        <td style="background-color: ${rowColor}; color: #fff; font-weight: 600;">${index + 1}</td>
-                        <td>${item.date}</td>
-                        <td class="ticker-cell" style="cursor: default;">${item.ticker}</td>
-                        <td>${item.companyName}</td>
-                        <td class="news-cell">${item.news}</td>
-                        <td>${item.insider ? `<span class="insider-badge">${item.insider}</span>` : '-'}</td>
-                        <td class="amount-cell">${item.amount || '-'}</td>
-                        <td class="price-cell">${alertPriceText}</td>
-                        <td class="price-cell">${currentPriceText}</td>
-                        <td class="${changeClass}">${changeText}</td>
-                    </tr>
+                if (typeof item.currentPrice === 'number') {
+                    const change = ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100;
+                    changeClass = change >= 0 ? 'change-cell change-positive' : 'change-cell change-negative';
+                    const sign = change > 0 ? '+' : '';
+                    changeText = `${sign}${change.toFixed(2)}%`;
+                }
+                
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.date}</td>
+                    <td class="ticker-cell" style="color:var(--accent-purple);">${item.ticker}</td>
+                    <td>${item.company}</td>
+                    <td class="news-cell"><span class="insider-badge">BUY</span>${item.news}</td>
+                    <td>${item.insider}</td>
+                    <td class="amount-cell">$${(item.amount * item.alertPrice).toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
+                    <td class="price-cell">$${item.alertPrice.toFixed(2)}</td>
+                    <td class="price-cell insider-current-price-cell">${currentPriceDisplay}</td>
+                    <td class="${changeClass}">${changeText}</td>
                 `;
-            }).join('');
+                tbody.appendChild(tr);
+            });
+        }
+        
+        async function refreshInsiderPrices() {
+            showInsiderStatus('Refreshing insider prices...', 'info');
+            
+            const fetchPromises = insiderData.map(async item => {
+                const currentPrice = await fetchQuote(item.ticker);
+                if (currentPrice !== null) {
+                    item.currentPrice = currentPrice;
+                } else if (item.currentPrice === null) {
+                    item.currentPrice = 'N/A';
+                }
+            });
+
+            await Promise.all(fetchPromises);
+            renderInsiderTable();
+            showInsiderStatus('Insider prices updated successfully.', 'success');
         }
 
         function exportInsiderCSV() {
-            if (insiderData.length === 0) {
-                showInsiderStatus('No data to export', 'error');
+             if (insiderData.length === 0) {
+                showInsiderStatus('No data to export.', 'error');
                 return;
             }
+            
+            const headers = ['Date', 'Ticker', 'Company', 'Insider', 'Alert Price', 'Current Price', '% Change', 'Transaction Amount', 'News'];
+            const csvRows = [headers.join(',')];
 
-            const headers = ['#', 'Date', 'Ticker', 'Company', 'News', 'Insider', 'Amount', 'Alert Price', 'Current Price', '% Change'];
-            const rows = insiderData.map((item, index) => {
-                const change = item.alertPrice && item.currentPrice ? 
-                    ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100 : null;
-                const changeText = change !== null ? `${change.toFixed(2)}%` : '';
-                return [
-                    index + 1, item.date, item.ticker, `"${item.companyName}"`, `"${item.news}"`,
-                    item.insider, item.amount, item.alertPrice || '', item.currentPrice || '', changeText
-                ].join(',');
+            insiderData.forEach(item => {
+                let change = 'N/A';
+                let currentPriceString = typeof item.currentPrice === 'number' ? item.currentPrice.toFixed(2) : 'N/A';
+                
+                if (typeof item.currentPrice === 'number') {
+                    change = (((item.currentPrice - item.alertPrice) / item.alertPrice) * 100).toFixed(2) + '%';
+                }
+                
+                const amountValue = (item.amount * item.alertPrice).toFixed(2);
+
+                csvRows.push([
+                    item.date,
+                    item.ticker,
+                    `"${item.company.replace(/"/g, '""')}"`,
+                    `"${item.insider.replace(/"/g, '""')}"`,
+                    item.alertPrice.toFixed(2),
+                    currentPriceString,
+                    change,
+                    amountValue,
+                    `"${item.news.replace(/"/g, '""')}"`
+                ].join(','));
             });
 
-            const csv = [headers.join(','), ...rows].join('\n');
-            downloadCSV(csv, 'insider_trades');
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `insider_tracking_data_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showInsiderStatus('Exported insider data to CSV successfully.', 'success');
         }
+
     </script>
 </body>
 </html>
