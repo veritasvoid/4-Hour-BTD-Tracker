@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Tracker Hub</title>
+    <title>Tracker Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #050712;
-            --bg-secondary: rgba(13, 17, 23, 0.88);
-            --bg-tertiary: rgba(22, 27, 34, 0.88);
-            --bg-elevated: rgba(32, 38, 46, 0.92);
+            --bg-secondary: rgba(13, 17, 23, 0.9);
+            --bg-tertiary: rgba(22, 27, 34, 0.9);
+            --bg-elevated: rgba(32, 38, 46, 0.96);
             --accent-primary: #58a6ff;
             --accent-green: #3fb950;
             --accent-red: #f85149;
@@ -22,10 +22,10 @@
             --text-tertiary: #6e7681;
             --border-default: #30363d;
             --border-muted: #21262d;
-            --glass-border: rgba(255, 255, 255, 0.04);
-            --glass-bg: rgba(13, 17, 23, 0.82);
-            --glass-elevated-bg: rgba(22, 27, 34, 0.92);
-            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.03);
+            --glass-bg: rgba(7, 10, 18, 0.86);
+            --glass-elevated-bg: rgba(10, 14, 22, 0.96);
+            --shadow-soft: 0 14px 35px rgba(0, 0, 0, 0.55);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,9 +34,9 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background:
-                radial-gradient(circle at 0% 0%, rgba(88, 166, 255, 0.16), transparent 55%),
-                radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.15), transparent 55%),
-                radial-gradient(circle at 100% 0%, rgba(63, 185, 80, 0.12), transparent 55%),
+                radial-gradient(circle at 0% 0%, rgba(88, 166, 255, 0.14), transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.12), transparent 55%),
+                radial-gradient(circle at 100% 0%, rgba(63, 185, 80, 0.08), transparent 55%),
                 #02040a;
             color: var(--text-primary);
             min-height: 100vh;
@@ -51,7 +51,7 @@
             pointer-events: none;
             position: fixed;
             inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
             mix-blend-mode: soft-light;
             z-index: -1;
         }
@@ -59,7 +59,7 @@
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(10, 13, 20, 0.85); border-radius: 4px; }
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #58a6ff, #a371f7);
+            background: linear-gradient(180deg, #3b82f6, #6366f1);
             border-radius: 4px;
         }
 
@@ -78,15 +78,15 @@
             height: 3px;
             background: linear-gradient(
                 90deg,
-                rgba(88, 166, 255, 0.1),
-                rgba(88, 166, 255, 0.9),
-                rgba(163, 113, 247, 0.9),
-                rgba(57, 197, 207, 0.9),
-                rgba(63, 185, 80, 0.9),
-                rgba(88, 166, 255, 0.1)
+                rgba(88, 166, 255, 0.2),
+                rgba(88, 166, 255, 0.7),
+                rgba(163, 113, 247, 0.7),
+                rgba(57, 197, 207, 0.7),
+                rgba(63, 185, 80, 0.7),
+                rgba(88, 166, 255, 0.2)
             );
             background-size: 200% 100%;
-            animation: pulse-bar 12s linear infinite;
+            animation: pulse-bar 14s linear infinite;
             z-index: 999;
         }
 
@@ -98,17 +98,18 @@
         .nav-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             margin-bottom: 28px;
             padding: 18px 22px;
-            border-radius: 18px;
-            background: radial-gradient(circle at 0% 0%, rgba(88, 166, 255, 0.12), transparent 60%),
-                        radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.16), transparent 60%),
-                        rgba(10, 14, 22, 0.94);
+            border-radius: 20px;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(88, 166, 255, 0.12), transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.12), transparent 60%),
+                rgba(10, 14, 22, 0.94);
             border: 1px solid rgba(88, 166, 255, 0.25);
             box-shadow:
-                0 18px 60px rgba(0, 0, 0, 0.8),
-                0 0 32px rgba(88, 166, 255, 0.2);
+                0 12px 30px rgba(0, 0, 0, 0.7),
+                0 0 20px rgba(88, 166, 255, 0.2);
             position: relative;
             overflow: hidden;
         }
@@ -117,7 +118,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 10% -10%, rgba(88, 166, 255, 0.22), transparent 60%);
+            background: radial-gradient(circle at 10% -10%, rgba(255, 255, 255, 0.1), transparent 60%);
             opacity: 0.6;
             pointer-events: none;
         }
@@ -125,7 +126,7 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             position: relative;
             z-index: 1;
         }
@@ -133,26 +134,29 @@
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: radial-gradient(circle at 30% 0%, #fff, #58a6ff);
             border-radius: 14px;
+            background:
+                radial-gradient(circle at 30% 0%, #ffffff, #60a5fa);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: #020617;
             box-shadow:
-                0 0 25px rgba(88, 166, 255, 0.75),
-                0 12px 18px rgba(0, 0, 0, 0.85);
+                0 6px 14px rgba(0, 0, 0, 0.65),
+                0 0 14px rgba(96, 165, 250, 0.55);
         }
 
         .logo-text {
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
-            background: linear-gradient(120deg, #e5e7eb, #58a6ff, #a371f7);
+            background: linear-gradient(120deg, #e5e7eb, #60a5fa, #a855f7);
             -webkit-background-clip: text;
             color: transparent;
-            text-shadow: 0 0 16px rgba(88, 166, 255, 0.65);
         }
 
         .page { display: none; }
@@ -166,14 +170,18 @@
         .page-header {
             margin-bottom: 22px;
             padding: 10px 4px;
+            text-align: center;
         }
 
         .page-title {
-            font-size: 1.9rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            letter-spacing: 0.08em;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
+            background: linear-gradient(110deg, #e5e7eb, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            color: transparent;
         }
 
         .page-subtitle {
@@ -203,10 +211,10 @@
             border-radius: 18px;
             border: 1px solid rgba(88, 166, 255, 0.16);
             box-shadow:
-                0 22px 60px rgba(0, 0, 0, 0.85),
-                0 0 32px rgba(88, 166, 255, 0.15);
+                0 18px 45px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(88, 166, 255, 0.12);
             overflow: hidden;
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(18px);
         }
 
         .card-header {
@@ -261,8 +269,8 @@
             background: rgba(20, 24, 32, 0.9);
             padding: 4px;
             border-radius: 999px;
-            border: 1px solid rgba(88, 166, 255, 0.3);
-            box-shadow: 0 0 18px rgba(88, 166, 255, 0.25);
+            border: 1px solid rgba(88, 166, 255, 0.25);
+            box-shadow: 0 0 14px rgba(88, 166, 255, 0.25);
         }
 
         .page-nav-tab {
@@ -280,14 +288,14 @@
 
         .page-nav-tab:hover {
             color: var(--text-primary);
-            background: rgba(88, 166, 255, 0.15);
-            box-shadow: 0 0 12px rgba(88, 166, 255, 0.35);
+            background: rgba(88, 166, 255, 0.12);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.25);
         }
 
         .page-nav-tab.active {
             background: radial-gradient(circle at 30% 0%, #58a6ff, #39c5cf);
             color: #fff;
-            box-shadow: 0 0 18px rgba(88, 166, 255, 0.7);
+            box-shadow: 0 0 16px rgba(88, 166, 255, 0.5);
         }
 
         input[type="date"] {
@@ -305,7 +313,7 @@
             outline: none;
             border-color: var(--accent-primary);
             background: rgba(8, 12, 20, 0.95);
-            box-shadow: 0 0 14px rgba(88, 166, 255, 0.55);
+            box-shadow: 0 0 12px rgba(88, 166, 255, 0.4);
         }
 
         textarea {
@@ -326,7 +334,7 @@
             outline: none;
             border-color: var(--accent-primary);
             background: rgba(8, 12, 20, 0.98);
-            box-shadow: 0 0 18px rgba(88, 166, 255, 0.45);
+            box-shadow: 0 0 14px rgba(88, 166, 255, 0.35);
         }
 
         textarea::placeholder { color: var(--text-tertiary); }
@@ -336,6 +344,7 @@
             gap: 10px;
             margin-bottom: 24px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
@@ -366,35 +375,33 @@
             pointer-events: none;
         }
 
-        .btn:hover::after { opacity: 1; }
+        .btn:hover::after { opacity: 0.6; }
 
         .btn-primary {
-            background: linear-gradient(135deg, #58a6ff, #39c5cf);
+            background: linear-gradient(135deg, #60a5fa, #38bdf8);
             color: #fff;
             box-shadow:
-                0 0 22px rgba(88, 166, 255, 0.7),
-                0 10px 24px rgba(0, 0, 0, 0.7);
+                0 8px 20px rgba(37, 99, 235, 0.6),
+                0 0 14px rgba(56, 189, 248, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-1px);
             box-shadow:
-                0 0 26px rgba(88, 166, 255, 0.9),
-                0 14px 28px rgba(0, 0, 0, 0.85);
+                0 10px 26px rgba(37, 99, 235, 0.7),
+                0 0 18px rgba(56, 189, 248, 0.5);
         }
 
         .btn-secondary {
             background: rgba(22, 27, 34, 0.9);
             color: var(--text-primary);
             border-color: var(--border-default);
-            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
         }
 
         .btn-secondary:hover {
             background: rgba(32, 38, 46, 0.98);
-            box-shadow:
-                0 0 18px rgba(88, 166, 255, 0.4),
-                0 10px 26px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.75);
             transform: translateY(-1px);
         }
 
@@ -405,8 +412,8 @@
         }
 
         .btn-danger:hover {
-            background: rgba(248, 81, 73, 0.1);
-            box-shadow: 0 0 18px rgba(248, 81, 73, 0.45);
+            background: rgba(248, 81, 73, 0.12);
+            box-shadow: 0 0 12px rgba(248, 81, 73, 0.4);
             transform: translateY(-1px);
         }
 
@@ -417,8 +424,8 @@
         }
 
         .btn-success:hover {
-            background: rgba(63, 185, 80, 0.1);
-            box-shadow: 0 0 18px rgba(63, 185, 80, 0.45);
+            background: rgba(63, 185, 80, 0.12);
+            box-shadow: 0 0 12px rgba(63, 185, 80, 0.4);
             transform: translateY(-1px);
         }
 
@@ -430,25 +437,28 @@
             display: none;
             border: 1px solid transparent;
             backdrop-filter: blur(10px);
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .status-success {
-            background: rgba(63, 185, 80, 0.12);
-            border-color: rgba(63, 185, 80, 0.45);
+            background: rgba(63, 185, 80, 0.1);
+            border-color: rgba(63, 185, 80, 0.4);
             color: var(--accent-green);
             display: block;
         }
 
         .status-error {
-            background: rgba(248, 81, 73, 0.14);
-            border-color: rgba(248, 81, 73, 0.5);
+            background: rgba(248, 81, 73, 0.12);
+            border-color: rgba(248, 81, 73, 0.45);
             color: var(--accent-red);
             display: block;
         }
 
         .status-info {
-            background: rgba(88, 166, 255, 0.14);
-            border-color: rgba(88, 166, 255, 0.5);
+            background: rgba(88, 166, 255, 0.12);
+            border-color: rgba(88, 166, 255, 0.4);
             color: var(--accent-primary);
             display: block;
         }
@@ -459,7 +469,7 @@
             align-items: center;
             padding: 16px 20px;
             border-bottom: 1px solid rgba(48, 54, 61, 0.8);
-            background: linear-gradient(135deg, rgba(19, 24, 32, 0.95), rgba(12, 16, 26, 0.95));
+            background: linear-gradient(135deg, rgba(19, 24, 32, 0.96), rgba(10, 14, 22, 0.96));
             backdrop-filter: blur(18px);
         }
 
@@ -477,7 +487,7 @@
             border-radius: 999px;
             font-size: 0.75rem;
             color: var(--text-secondary);
-            border: 1px solid rgba(88, 166, 255, 0.4);
+            border: 1px solid rgba(88, 166, 255, 0.35);
         }
 
         .table-container { overflow-x: auto; }
@@ -520,11 +530,11 @@
         }
 
         tbody tr:hover {
-            filter: brightness(1.1);
+            filter: brightness(1.06);
             transform: translateY(-1px);
             box-shadow:
-                0 8px 24px rgba(0, 0, 0, 0.7),
-                0 0 14px rgba(88, 166, 255, 0.35);
+                0 8px 18px rgba(0, 0, 0, 0.7),
+                0 0 10px rgba(88, 166, 255, 0.25);
         }
 
         .ticker-cell {
@@ -538,7 +548,7 @@
 
         .ticker-cell:hover {
             color: var(--accent-cyan);
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.75);
+            text-shadow: 0 0 8px rgba(88, 166, 255, 0.65);
         }
 
         .ticker-cell::after {
@@ -568,7 +578,7 @@
             outline: none;
             border-color: var(--accent-primary);
             background: rgba(8, 12, 20, 0.98);
-            box-shadow: 0 0 14px rgba(88, 166, 255, 0.5);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.4);
         }
 
         .price-input {
@@ -588,7 +598,7 @@
             outline: none;
             border-color: var(--accent-primary);
             background: rgba(8, 12, 20, 0.98);
-            box-shadow: 0 0 14px rgba(88, 166, 255, 0.45);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.35);
         }
 
         .btn-remove {
@@ -642,37 +652,37 @@
         }
 
         .company-info-content {
-            padding: 22px 24px 20px;
+            padding: 20px 24px 18px;
             background:
-                radial-gradient(circle at 0 0, rgba(88, 166, 255, 0.16), transparent 60%),
-                radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.18), transparent 60%),
+                radial-gradient(circle at 0 0, rgba(88, 166, 255, 0.14), transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.14), transparent 60%),
                 rgba(3, 7, 18, 0.98);
-            backdrop-filter: blur(22px);
+            backdrop-filter: blur(20px);
             border-radius: 18px;
             box-shadow:
-                0 22px 60px rgba(0, 0, 0, 0.9),
-                0 0 26px rgba(88, 166, 255, 0.25);
+                0 16px 40px rgba(0, 0, 0, 0.85),
+                0 0 18px rgba(88, 166, 255, 0.18);
         }
 
         .company-info-layout {
             display: grid;
             grid-template-rows: auto 1fr;
-            gap: 18px;
+            gap: 16px;
         }
 
         .company-hero {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: 12px 18px;
             border-radius: 14px;
             background:
-                linear-gradient(120deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95)),
-                linear-gradient(120deg, rgba(88, 166, 255, 0.45), rgba(163, 113, 247, 0.6));
-            border: 1px solid rgba(88, 166, 255, 0.5);
+                linear-gradient(120deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.96)),
+                linear-gradient(120deg, rgba(88, 166, 255, 0.35), rgba(163, 113, 247, 0.45));
+            border: 1px solid rgba(88, 166, 255, 0.4);
             box-shadow:
-                0 14px 40px rgba(0, 0, 0, 0.85),
-                0 0 22px rgba(88, 166, 255, 0.4);
+                0 10px 30px rgba(0, 0, 0, 0.8),
+                0 0 16px rgba(88, 166, 255, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -681,27 +691,24 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.14), transparent 55%);
+            background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.1), transparent 55%);
             mix-blend-mode: soft-light;
             opacity: 0.7;
             pointer-events: none;
         }
 
-        .company-hero-main {
-            position: relative;
-            z-index: 1;
-        }
+        .company-hero-main { position: relative; z-index: 1; }
 
         .company-hero-ticker {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.15rem;
-            letter-spacing: 0.16em;
+            font-size: 1.05rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             margin-bottom: 4px;
         }
 
         .company-hero-name {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
         }
 
@@ -720,45 +727,42 @@
             letter-spacing: 0.05em;
             text-transform: uppercase;
             border: 1px solid rgba(148, 163, 184, 0.7);
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.72);
             color: #e5e7eb;
         }
 
         .company-panels {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
+            gap: 14px;
         }
 
         .company-panel {
-            background: rgba(10, 14, 22, 0.96);
+            background: rgba(7, 11, 20, 0.96);
             border-radius: 14px;
-            padding: 16px 16px 14px;
-            border: 1px solid rgba(31, 41, 55, 0.95);
+            padding: 14px 14px 12px;
+            border: 1px solid rgba(31, 41, 55, 0.9);
             box-shadow:
-                0 18px 40px rgba(0, 0, 0, 0.9),
-                0 0 18px rgba(15, 23, 42, 0.8);
+                0 12px 30px rgba(0, 0, 0, 0.85),
+                0 0 12px rgba(15, 23, 42, 0.7);
         }
 
         .company-panel h4 {
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 8px;
+            letter-spacing: 0.12em;
+            margin-bottom: 6px;
         }
 
-        .company-panel-snapshot h4 {
-            color: var(--accent-primary);
-        }
-
+        .company-panel-snapshot h4,
         .company-panel-bottomline h4 {
             color: var(--accent-primary);
         }
 
         .company-panel p {
             color: var(--text-secondary);
-            font-size: 0.86rem;
-            line-height: 1.7;
+            font-size: 0.84rem;
+            line-height: 1.6;
         }
 
         .company-panel a {
@@ -770,22 +774,15 @@
         .company-panel-score {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             align-items: flex-start;
             justify-content: center;
             background:
-                radial-gradient(circle at 0 0, rgba(250, 204, 21, 0.2), rgba(15, 23, 42, 1));
+                radial-gradient(circle at 0 0, rgba(250, 204, 21, 0.13), rgba(15, 23, 42, 1));
             border-color: rgba(250, 204, 21, 0.7);
             box-shadow:
-                0 0 22px rgba(250, 204, 21, 0.55),
-                0 12px 26px rgba(0, 0, 0, 0.9);
-        }
-
-        .score-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: rgba(248, 250, 252, 0.76);
+                0 10px 26px rgba(0, 0, 0, 0.8),
+                0 0 14px rgba(250, 204, 21, 0.35);
         }
 
         .score-main {
@@ -796,14 +793,14 @@
 
         .score-sub {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: rgba(248, 250, 252, 0.8);
+            font-size: 0.78rem;
+            color: rgba(248, 250, 252, 0.85);
         }
 
         .score-note {
             font-size: 0.78rem;
             color: var(--text-tertiary);
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .company-info-loading {
@@ -843,10 +840,8 @@
             .input-grid { grid-template-columns: 1fr; }
             .button-row { flex-direction: column; }
             .btn { width: 100%; justify-content: center; }
-            .date-row-container { flex-direction: column; align-items: flex-start; }
-            .company-panels {
-                grid-template-columns: minmax(0, 1fr);
-            }
+            .date-row-container { flex-direction: column; align-items: center; }
+            .company-panels { grid-template-columns: minmax(0, 1fr); }
         }
     </style>
 </head>
@@ -854,7 +849,10 @@
     <div class="top-gradient-bar"></div>
     <div class="app-container">
         <header class="nav-header">
-            <div class="logo"><div class="logo-icon">📈</div><span class="logo-text">Stock Tracker Hub</span></div>
+            <div class="logo">
+                <div class="logo-icon">TH</div>
+                <span class="logo-text">Tracker Hub</span>
+            </div>
         </header>
 
         <!-- DIP TRACKER PAGE -->
@@ -955,7 +953,7 @@
                 <div class="card input-full">
                     <div class="date-row-container">
                         <div class="date-picker-row">
-                            <label>Insider Tracker</label>
+                            <!-- intentionally empty to avoid extra label text -->
                         </div>
                         <div class="page-nav-tabs">
                             <button class="page-nav-tab" onclick="showPage('comparison')" id="nav2-comparison">Dip Tracker</button>
@@ -1312,7 +1310,6 @@
                         </div>
                         <div class="company-panel company-panel-score">
                             <h4>Buy the Dip</h4>
-                            <div class="score-label">Scoreboard</div>
                             <div class="score-main">Wait</div>
                             <div class="score-sub">— % certainty</div>
                             <p class="score-note">Grok score will land here the first time you request analysis for this ticker.</p>
@@ -1345,7 +1342,6 @@
                     </div>
                     <div class="company-panel company-panel-score">
                         <h4>Buy the Dip</h4>
-                        <div class="score-label">Scoreboard</div>
                         <div class="score-main">Wait</div>
                         <div class="score-sub">— % certainty</div>
                         <p class="score-note">Once Grok runs on this ticker, this card will flip to Yes/No plus a live certainty percentage.</p>
@@ -1588,7 +1584,6 @@
                         </div>
                         <div class="company-panel company-panel-score">
                             <h4>Buy the Dip</h4>
-                            <div class="score-label">Scoreboard</div>
                             <div class="score-main">Wait</div>
                             <div class="score-sub">— % certainty</div>
                             <p class="score-note">Grok certainty for this insider setup will show here after first analysis.</p>
@@ -1621,7 +1616,6 @@
                     </div>
                     <div class="company-panel company-panel-score">
                         <h4>Buy the Dip</h4>
-                        <div class="score-label">Scoreboard</div>
                         <div class="score-main">Wait</div>
                         <div class="score-sub">— % certainty</div>
                         <p class="score-note">Future state: Yes/No plus certainty when Grok has seen and stored this ticker’s insider pattern.</p>
