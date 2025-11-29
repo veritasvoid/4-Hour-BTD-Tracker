@@ -46,7 +46,7 @@
             overflow-x: hidden;
         }
 
-        /* subtle noise overlay for premium tactile feel */
+        /* subtle noise overlay */
         body::before {
             content: "";
             pointer-events: none;
@@ -634,54 +634,214 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .company-info-row td { padding: 0; }
+        /* EXPANDED COMPANY INFO AREA */
+
+        .company-info-row td {
+            padding: 0;
+        }
 
         .company-info-content {
-            padding: 20px 24px;
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
-            gap: 16px;
-            background: radial-gradient(circle at 0 0, rgba(88, 166, 255, 0.12), transparent 60%),
-                        radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.14), transparent 60%),
-                        rgba(5, 9, 16, 0.98);
-            backdrop-filter: blur(18px);
+            padding: 22px 24px 20px;
+            background:
+                radial-gradient(circle at 0 0, rgba(88, 166, 255, 0.16), transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(163, 113, 247, 0.18), transparent 60%),
+                rgba(3, 7, 18, 0.98);
+            backdrop-filter: blur(22px);
+            border-radius: 18px;
+            box-shadow:
+                0 22px 60px rgba(0, 0, 0, 0.9),
+                0 0 26px rgba(88, 166, 255, 0.25);
         }
 
-        .company-info-section {
-            background: rgba(10, 14, 22, 0.94);
+        .company-info-layout {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 18px;
+        }
+
+        .company-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
             border-radius: 14px;
-            padding: 16px;
-            border: 1px solid rgba(88, 166, 255, 0.18);
+            background:
+                linear-gradient(120deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95)),
+                linear-gradient(120deg, rgba(88, 166, 255, 0.45), rgba(163, 113, 247, 0.6));
+            border: 1px solid rgba(88, 166, 255, 0.5);
+            box-shadow:
+                0 14px 40px rgba(0, 0, 0, 0.85),
+                0 0 22px rgba(88, 166, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.14), transparent 55%);
+            mix-blend-mode: soft-light;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .company-hero-main {
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-hero-ticker {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.15rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .company-hero-name {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .company-hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-hero-chip {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            background: rgba(15, 23, 42, 0.7);
+            color: #e5e7eb;
+        }
+
+        .company-panels {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            gap: 16px;
+        }
+
+        .company-panel {
+            background: rgba(10, 14, 22, 0.96);
+            border-radius: 14px;
+            padding: 16px 16px 14px;
+            border: 1px solid rgba(31, 41, 55, 0.95);
             box-shadow:
                 0 18px 40px rgba(0, 0, 0, 0.9),
-                0 0 22px rgba(88, 166, 255, 0.18);
+                0 0 18px rgba(15, 23, 42, 0.8);
         }
 
-        .company-info-section h4 {
-            font-size: 0.6875rem;
+        .company-panel-snapshot h4 {
+            font-size: 0.75rem;
             text-transform: uppercase;
+            letter-spacing: 0.1em;
             color: var(--accent-primary);
             margin-bottom: 10px;
-            font-weight: 600;
-            letter-spacing: 0.08em;
         }
 
-        .company-info-section p {
+        .company-panel-snapshot p {
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.6;
+            font-size: 0.88rem;
+            line-height: 1.7;
         }
 
-        .company-info-section a {
+        .company-panel-snapshot a {
             color: var(--accent-primary);
             text-decoration: none;
+            font-size: 0.8rem;
         }
 
-        .company-info-loading {
-            text-align: center;
-            padding: 30px;
+        .company-panel-bottomline {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-panel-bottomline::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.16), transparent 60%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .company-panel-bottomline-inner {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-rows: auto auto;
+            gap: 12px;
+        }
+
+        .bottomline-header {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        .verdict-card {
+            flex: 0 0 145px;
+            border-radius: 14px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            background: radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.18), rgba(15, 23, 42, 1));
+            border: 1px solid rgba(34, 197, 94, 0.7);
+            box-shadow:
+                0 0 24px rgba(34, 197, 94, 0.6),
+                0 12px 26px rgba(0, 0, 0, 0.9);
+        }
+
+        /* neutral / wait style by default until Grok is wired */
+        .verdict-card-wait {
+            background: radial-gradient(circle at 0 0, rgba(250, 204, 21, 0.2), rgba(15, 23, 42, 1));
+            border-color: rgba(250, 204, 21, 0.7);
+            box-shadow:
+                0 0 22px rgba(250, 204, 21, 0.55),
+                0 12px 26px rgba(0, 0, 0, 0.9);
+        }
+
+        .verdict-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(248, 250, 252, 0.7);
+        }
+
+        .verdict-main {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .verdict-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: rgba(248, 250, 252, 0.8);
+        }
+
+        .bottomline-copy h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            margin-bottom: 6px;
+        }
+
+        .bottomline-copy p {
+            font-size: 0.86rem;
             color: var(--text-secondary);
-            grid-column: 1 / -1;
+            line-height: 1.6;
         }
 
         .info-grid {
@@ -711,6 +871,12 @@
             font-size: 0.8125rem;
         }
 
+        .company-info-loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+
         .news-cell { max-width: 280px; font-size: 0.8125rem; color: var(--text-secondary); }
 
         .insider-badge {
@@ -732,7 +898,7 @@
         }
 
         @media (max-width: 1024px) {
-            .company-info-content {
+            .company-panels {
                 grid-template-columns: 1fr;
             }
         }
@@ -742,7 +908,6 @@
             .input-grid { grid-template-columns: 1fr; }
             .button-row { flex-direction: column; }
             .btn { width: 100%; justify-content: center; }
-            .company-info-content { grid-template-columns: 1fr; }
             .date-row-container { flex-direction: column; align-items: flex-start; }
         }
     </style>
@@ -816,122 +981,701 @@
         const ALPACA_TRADING_URL = 'https://paper-api.alpaca.markets/v2';
         const FINNHUB_API_KEY = 'd4k7dohr01qvpdoie0rgd4k7dohr01qvpdoie0s0';
 
-        // More distinct visible colors - 20% opacity for good contrast
+        // date colors
         const dateColors = [
-            'rgba(56, 139, 253, 0.20)',   // Blue
-            'rgba(46, 160, 67, 0.20)',    // Green  
-            'rgba(137, 87, 229, 0.20)',   // Purple
-            'rgba(219, 171, 9, 0.20)',    // Yellow
-            'rgba(238, 87, 55, 0.20)',    // Red-Orange
-            'rgba(13, 170, 182, 0.20)',   // Teal
-            'rgba(191, 74, 142, 0.20)',   // Pink
-            'rgba(96, 125, 217, 0.20)',   // Indigo
-            'rgba(204, 120, 50, 0.20)',   // Orange
-            'rgba(121, 184, 202, 0.20)',  // Light Blue
-            'rgba(163, 113, 247, 0.20)',  // Violet
-            'rgba(255, 123, 114, 0.20)',  // Coral
-            'rgba(125, 201, 145, 0.20)',  // Mint
-            'rgba(255, 166, 87, 0.20)',   // Peach
-            'rgba(149, 157, 239, 0.20)',  // Periwinkle
-            'rgba(238, 145, 179, 0.20)',  // Rose
-            'rgba(98, 205, 192, 0.20)',   // Aqua
-            'rgba(185, 152, 104, 0.20)',  // Tan
-            'rgba(87, 171, 90, 0.20)',    // Light Green
-            'rgba(175, 140, 200, 0.20)'   // Lavender
+            'rgba(56, 139, 253, 0.20)',
+            'rgba(46, 160, 67, 0.20)',
+            'rgba(137, 87, 229, 0.20)',
+            'rgba(219, 171, 9, 0.20)',
+            'rgba(238, 87, 55, 0.20)',
+            'rgba(13, 170, 182, 0.20)',
+            'rgba(191, 74, 142, 0.20)',
+            'rgba(96, 125, 217, 0.20)',
+            'rgba(204, 120, 50, 0.20)',
+            'rgba(121, 184, 202, 0.20)',
+            'rgba(163, 113, 247, 0.20)',
+            'rgba(255, 123, 114, 0.20)',
+            'rgba(125, 201, 145, 0.20)',
+            'rgba(255, 166, 87, 0.20)',
+            'rgba(149, 157, 239, 0.20)',
+            'rgba(238, 145, 179, 0.20)',
+            'rgba(98, 205, 192, 0.20)',
+            'rgba(185, 152, 104, 0.20)',
+            'rgba(87, 171, 90, 0.20)',
+            'rgba(175, 140, 200, 0.20)'
         ];
         let dateColorMap = {}, colorIndex = 0;
-        function getDateColor(date) { if (!dateColorMap[date]) { dateColorMap[date] = dateColors[colorIndex++ % dateColors.length]; } return dateColorMap[date]; }
+        function getDateColor(date) {
+            if (!dateColorMap[date]) {
+                dateColorMap[date] = dateColors[colorIndex++ % dateColors.length];
+            }
+            return dateColorMap[date];
+        }
 
         function showPage(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + page).classList.add('active');
             document.querySelectorAll('.page-nav-tab').forEach(t => t.classList.remove('active'));
-            if (page === 'comparison') { document.getElementById('nav1-comparison').classList.add('active'); document.getElementById('nav2-comparison').classList.add('active'); }
-            else { document.getElementById('nav1-insider').classList.add('active'); document.getElementById('nav2-insider').classList.add('active'); }
+            if (page === 'comparison') {
+                document.getElementById('nav1-comparison').classList.add('active');
+                document.getElementById('nav2-comparison').classList.add('active');
+            } else {
+                document.getElementById('nav1-insider').classList.add('active');
+                document.getElementById('nav2-insider').classList.add('active');
+            }
             if (page === 'insider') loadInsiderData();
         }
 
         let parsedData = [], rowIdCounter = 0, insiderData = [];
-        document.addEventListener('DOMContentLoaded', async () => { document.getElementById('dataDate').value = new Date().toISOString().split('T')[0]; await loadFromGoogleSheets(); });
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('dataDate').value = new Date().toISOString().split('T')[0];
+            await loadFromGoogleSheets();
+        });
 
-        function showStatus(msg, type) { const el = document.getElementById('statusMessage'); el.textContent = msg; el.className = 'status-message status-' + type; setTimeout(() => el.className = 'status-message', 5000); }
-        function showInsiderStatus(msg, type) { const el = document.getElementById('insiderStatusMessage'); el.textContent = msg; el.className = 'status-message status-' + type; setTimeout(() => el.className = 'status-message', 5000); }
+        function showStatus(msg, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = msg;
+            el.className = 'status-message status-' + type;
+            setTimeout(() => el.className = 'status-message', 5000);
+        }
+        function showInsiderStatus(msg, type) {
+            const el = document.getElementById('insiderStatusMessage');
+            el.textContent = msg;
+            el.className = 'status-message status-' + type;
+            setTimeout(() => el.className = 'status-message', 5000);
+        }
 
         async function loadFromGoogleSheets() {
-            try { showStatus('Loading...', 'info');
+            try {
+                showStatus('Loading...', 'info');
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_ID}/values/Sheet1?key=${GOOGLE_API_KEY}`);
-                if (res.ok) { const data = await res.json(); const rows = data.values || []; const dataRows = rows.length > 0 && rows[0][0] === 'id' ? rows.slice(1) : rows;
-                    if (dataRows.length > 0) { parsedData = dataRows.map(row => ({ id: parseInt(row[0]) || ++rowIdCounter, date: row[1] || '', ticker: row[2] || '', companyName: row[3] || '', price: parseFloat(row[4]) || 0, currentPrice: row[5] ? (row[5] === 'manual' ? 'manual' : parseFloat(row[5])) : null, expanded: false, companyInfo: null })); rowIdCounter = Math.max(...parsedData.map(d => d.id), 0); renderTable(); showStatus(`Loaded ${parsedData.length} rows`, 'success'); fetchCurrentPrices(parsedData.filter(item => item.currentPrice === null)); }
-                    else { renderTable(); showStatus('Ready', 'info'); } }
-            } catch (e) { showStatus('Connection error', 'error'); }
+                if (res.ok) {
+                    const data = await res.json();
+                    const rows = data.values || [];
+                    const dataRows = rows.length > 0 && rows[0][0] === 'id' ? rows.slice(1) : rows;
+                    if (dataRows.length > 0) {
+                        parsedData = dataRows.map(row => ({
+                            id: parseInt(row[0]) || ++rowIdCounter,
+                            date: row[1] || '',
+                            ticker: row[2] || '',
+                            companyName: row[3] || '',
+                            price: parseFloat(row[4]) || 0,
+                            currentPrice: row[5] ? (row[5] === 'manual' ? 'manual' : parseFloat(row[5])) : null,
+                            expanded: false,
+                            companyInfo: null
+                        }));
+                        rowIdCounter = Math.max(...parsedData.map(d => d.id), 0);
+                        renderTable();
+                        showStatus(`Loaded ${parsedData.length} rows`, 'success');
+                        fetchCurrentPrices(parsedData.filter(item => item.currentPrice === null));
+                    } else {
+                        renderTable();
+                        showStatus('Ready', 'info');
+                    }
+                }
+            } catch (e) {
+                showStatus('Connection error', 'error');
+            }
         }
 
-        async function saveToGoogleSheets() { try { const header = ['id', 'date', 'ticker', 'companyName', 'price', 'currentPrice']; const rows = parsedData.map(item => [item.id, item.date, item.ticker, item.companyName, item.price, item.currentPrice === null ? '' : item.currentPrice]); await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ data: [header, ...rows] }) }); } catch (e) {} }
+        async function saveToGoogleSheets() {
+            try {
+                const header = ['id', 'date', 'ticker', 'companyName', 'price', 'currentPrice'];
+                const rows = parsedData.map(item => [
+                    item.id,
+                    item.date,
+                    item.ticker,
+                    item.companyName,
+                    item.price,
+                    item.currentPrice === null ? '' : item.currentPrice
+                ]);
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ data: [header, ...rows] })
+                });
+            } catch (e) {}
+        }
         let saveTimeout = null;
-        function autoSave() { if (saveTimeout) clearTimeout(saveTimeout); saveTimeout = setTimeout(saveToGoogleSheets, 1000); }
+        function autoSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveToGoogleSheets, 1000);
+        }
 
-        async function fetchCurrentPrices(items) { if (!items || items.length === 0) return; for (const item of items) { try { const res = await fetch(`${ALPACA_DATA_URL}/stocks/${item.ticker}/trades/latest`, { headers: { 'APCA-API-KEY-ID': ALPACA_API_KEY, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY } }); if (res.ok) { const data = await res.json(); item.currentPrice = data.trade?.p || 'manual'; } else { item.currentPrice = 'manual'; } } catch (e) { item.currentPrice = 'manual'; } renderTable(); await new Promise(r => setTimeout(r, 150)); } autoSave(); }
+        async function fetchCurrentPrices(items) {
+            if (!items || items.length === 0) return;
+            for (const item of items) {
+                try {
+                    const res = await fetch(`${ALPACA_DATA_URL}/stocks/${item.ticker}/trades/latest`, {
+                        headers: {
+                            'APCA-API-KEY-ID': ALPACA_API_KEY,
+                            'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
+                        }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        item.currentPrice = data.trade?.p || 'manual';
+                    } else {
+                        item.currentPrice = 'manual';
+                    }
+                } catch (e) {
+                    item.currentPrice = 'manual';
+                }
+                renderTable();
+                await new Promise(r => setTimeout(r, 150));
+            }
+            autoSave();
+        }
 
-        function parseDataSet(rawData) { const results = []; let data = rawData.trim(); if (!data) return results; const marketCapPattern = /(\d{1,3}(?:,\d{3})*)\s*M(?=\s*[A-Z]|$)/g; let match; const positions = []; while ((match = marketCapPattern.exec(data)) !== null) { positions.push({ end: match.index + match[0].length }); } let startPos = 0; const segments = []; for (const pos of positions) { segments.push(data.substring(startPos, pos.end).trim()); startPos = pos.end; } if (segments.length === 0) segments.push(data); if (startPos < data.length) { const remaining = data.substring(startPos).trim(); if (remaining && remaining !== 'M') segments.push(remaining); } for (const segment of segments) { const parsed = parseRecord(segment); if (parsed) results.push(parsed); } return results; }
-        function parseRecord(record) { record = record.trim().replace(/\s*M\s*$/, ''); const tokens = record.split(/\s+/); if (tokens.length < 4) return null; let ticker = tokens[0], priceIndex = -1; for (let i = 1; i < tokens.length; i++) { if (/^\d*\.?\d+$/.test(tokens[i]) && tokens[i].includes('.')) { priceIndex = i; break; } } if (priceIndex === -1) return null; return { ticker, companyName: tokens.slice(1, priceIndex).join(' '), price: parseFloat(tokens[priceIndex]) }; }
+        function parseDataSet(rawData) {
+            const results = [];
+            let data = rawData.trim();
+            if (!data) return results;
+            const marketCapPattern = /(\d{1,3}(?:,\d{3})*)\s*M(?=\s*[A-Z]|$)/g;
+            let match;
+            const positions = [];
+            while ((match = marketCapPattern.exec(data)) !== null) {
+                positions.push({ end: match.index + match[0].length });
+            }
+            let startPos = 0;
+            const segments = [];
+            for (const pos of positions) {
+                segments.push(data.substring(startPos, pos.end).trim());
+                startPos = pos.end;
+            }
+            if (segments.length === 0) segments.push(data);
+            if (startPos < data.length) {
+                const remaining = data.substring(startPos).trim();
+                if (remaining && remaining !== 'M') segments.push(remaining);
+            }
+            for (const segment of segments) {
+                const parsed = parseRecord(segment);
+                if (parsed) results.push(parsed);
+            }
+            return results;
+        }
+        function parseRecord(record) {
+            record = record.trim().replace(/\s*M\s*$/, '');
+            const tokens = record.split(/\s+/);
+            if (tokens.length < 4) return null;
+            let ticker = tokens[0], priceIndex = -1;
+            for (let i = 1; i < tokens.length; i++) {
+                if (/^\d*\.?\d+$/.test(tokens[i]) && tokens[i].includes('.')) {
+                    priceIndex = i;
+                    break;
+                }
+            }
+            if (priceIndex === -1) return null;
+            return {
+                ticker,
+                companyName: tokens.slice(1, priceIndex).join(' '),
+                price: parseFloat(tokens[priceIndex])
+            };
+        }
 
-        function compareAndParse() { const dataset1 = document.getElementById('dataset1').value; const dataset2 = document.getElementById('dataset2').value; const selectedDate = document.getElementById('dataDate').value; if (!dataset1 || !dataset2) { showStatus('Paste data in both sets', 'error'); return; } if (!selectedDate) { showStatus('Select a date', 'error'); return; } const set1 = parseDataSet(dataset1), set2 = parseDataSet(dataset2); if (set1.length === 0 || set2.length === 0) { showStatus('Could not parse data', 'error'); return; } const set2Tickers = new Set(); for (const item of set2) { let ticker = item.ticker; if (ticker.startsWith('M') && ticker.length > 1) set2Tickers.add(ticker.substring(1)); set2Tickers.add(ticker); } const commonItems = [], addedTickers = new Set(); for (const item of set1) { let cleanTicker = item.ticker; if (cleanTicker.startsWith('M') && cleanTicker.length > 1) { const withoutM = cleanTicker.substring(1); if (set2Tickers.has(withoutM)) cleanTicker = withoutM; } if ((set2Tickers.has(cleanTicker) || set2Tickers.has('M' + cleanTicker)) && !addedTickers.has(cleanTicker)) { addedTickers.add(cleanTicker); commonItems.push({ ticker: cleanTicker, companyName: item.companyName, price: item.price, date: selectedDate, id: ++rowIdCounter, currentPrice: null }); } } if (commonItems.length === 0) { showStatus('No common tickers', 'error'); return; } parsedData = parsedData.concat(commonItems); document.getElementById('dataset1').value = ''; document.getElementById('dataset2').value = ''; showStatus(`Found ${commonItems.length} ticker(s)`, 'success'); renderTable(); fetchCurrentPrices(commonItems); autoSave(); }
+        function compareAndParse() {
+            const dataset1 = document.getElementById('dataset1').value;
+            const dataset2 = document.getElementById('dataset2').value;
+            const selectedDate = document.getElementById('dataDate').value;
+            if (!dataset1 || !dataset2) { showStatus('Paste data in both sets', 'error'); return; }
+            if (!selectedDate) { showStatus('Select a date', 'error'); return; }
+            const set1 = parseDataSet(dataset1), set2 = parseDataSet(dataset2);
+            if (set1.length === 0 || set2.length === 0) { showStatus('Could not parse data', 'error'); return; }
+            const set2Tickers = new Set();
+            for (const item of set2) {
+                let ticker = item.ticker;
+                if (ticker.startsWith('M') && ticker.length > 1) set2Tickers.add(ticker.substring(1));
+                set2Tickers.add(ticker);
+            }
+            const commonItems = [], addedTickers = new Set();
+            for (const item of set1) {
+                let cleanTicker = item.ticker;
+                if (cleanTicker.startsWith('M') && cleanTicker.length > 1) {
+                    const withoutM = cleanTicker.substring(1);
+                    if (set2Tickers.has(withoutM)) cleanTicker = withoutM;
+                }
+                if ((set2Tickers.has(cleanTicker) || set2Tickers.has('M' + cleanTicker)) && !addedTickers.has(cleanTicker)) {
+                    addedTickers.add(cleanTicker);
+                    commonItems.push({
+                        ticker: cleanTicker,
+                        companyName: item.companyName,
+                        price: item.price,
+                        date: selectedDate,
+                        id: ++rowIdCounter,
+                        currentPrice: null
+                    });
+                }
+            }
+            if (commonItems.length === 0) { showStatus('No common tickers', 'error'); return; }
+            parsedData = parsedData.concat(commonItems);
+            document.getElementById('dataset1').value = '';
+            document.getElementById('dataset2').value = '';
+            showStatus(`Found ${commonItems.length} ticker(s)`, 'success');
+            renderTable();
+            fetchCurrentPrices(commonItems);
+            autoSave();
+        }
 
-        function calculateChange(original, current) { if (current === null || current === 'manual' || isNaN(current)) return null; return ((current - original) / original) * 100; }
+        function calculateChange(original, current) {
+            if (current === null || current === 'manual' || isNaN(current)) return null;
+            return ((current - original) / original) * 100;
+        }
 
         function renderTable() {
-            const tbody = document.getElementById('resultsBody'); const emptyState = document.getElementById('emptyState'); document.getElementById('rowCount').textContent = `${parsedData.length} rows`;
-            if (parsedData.length === 0) { tbody.innerHTML = ''; emptyState.style.display = 'block'; return; } emptyState.style.display = 'none';
+            const tbody = document.getElementById('resultsBody');
+            const emptyState = document.getElementById('emptyState');
+            document.getElementById('rowCount').textContent = `${parsedData.length} rows`;
+            if (parsedData.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
             tbody.innerHTML = parsedData.map((item, index) => {
-                const change = calculateChange(item.price, item.currentPrice); const changeClass = change !== null ? (change >= 0 ? 'change-positive' : 'change-negative') : ''; const changeText = change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}%` : '—';
+                const change = calculateChange(item.price, item.currentPrice);
+                const changeClass = change !== null ? (change >= 0 ? 'change-positive' : 'change-negative') : '';
+                const changeText = change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}%` : '—';
                 let currentPriceText, currentPriceClass = '';
-                if (item.currentPrice === null) { currentPriceText = '<span class="loading"></span>'; }
-                else if (item.currentPrice === 'manual') { currentPriceText = `<input type="number" step="0.01" class="price-input" placeholder="Enter" onchange="updateCurrentPrice(${item.id}, this.value)">`; }
-                else { currentPriceClass = item.currentPrice >= item.price ? 'price-positive' : 'price-negative'; currentPriceText = `$${parseFloat(item.currentPrice).toFixed(2)}`; }
-                const rowColor = getDateColor(item.date); const isExpanded = item.expanded || false;
+                if (item.currentPrice === null) {
+                    currentPriceText = '<span class="loading"></span>';
+                } else if (item.currentPrice === 'manual') {
+                    currentPriceText = `<input type="number" step="0.01" class="price-input" placeholder="Enter" onchange="updateCurrentPrice(${item.id}, this.value)">`;
+                } else {
+                    currentPriceClass = item.currentPrice >= item.price ? 'price-positive' : 'price-negative';
+                    currentPriceText = `$${parseFloat(item.currentPrice).toFixed(2)}`;
+                }
+                const rowColor = getDateColor(item.date);
+                const isExpanded = item.expanded || false;
                 let html = `<tr style="background-color: ${rowColor};"><td>${index + 1}</td><td><input type="date" class="date-input" value="${item.date}" onchange="updateDate(${item.id}, this.value)"></td><td class="ticker-cell ${isExpanded ? 'expanded' : ''}" onclick="toggleCompanyInfo(${item.id})">${item.ticker}</td><td>${item.companyName}</td><td class="price-cell">$${item.price.toFixed(2)}</td><td class="price-cell ${currentPriceClass}">${currentPriceText}</td><td class="${changeClass}">${changeText}</td><td><button class="btn-remove" onclick="removeRow(${item.id})">✕</button></td></tr>`;
-                if (isExpanded) { html += `<tr class="company-info-row" style="background-color: ${rowColor};"><td colspan="8"><div class="company-info-content">${item.companyInfo ? renderCompanyInfo(item) : '<div class="company-info-loading"><span class="loading"></span> Loading...</div>'}</div></td></tr>`; }
+                if (isExpanded) {
+                    html += `<tr class="company-info-row" style="background-color: ${rowColor};"><td colspan="8"><div class="company-info-content">${item.companyInfo ? renderCompanyInfo(item) : '<div class="company-info-loading"><span class="loading"></span> Loading...</div>'}</div></td></tr>`;
+                }
                 return html;
             }).join('');
         }
 
-        function renderCompanyInfo(item) { const info = item.companyInfo; if (!info || info.error) return '<p style="color: var(--accent-red);">Unable to load info</p>'; return `<div class="company-info-section"><h4>📋 Summary</h4><p>${info.description || 'No description available.'}</p>${info.weburl ? `<p style="margin-top:10px;"><a href="${info.weburl}" target="_blank">🌐 Website</a></p>` : ''}</div><div class="company-info-section"><h4>📊 Trading Info</h4><div class="info-grid"><div class="info-item"><label>Exchange</label><span>${info.exchange || 'N/A'}</span></div><div class="info-item"><label>Industry</label><span>${info.industry || 'N/A'}</span></div><div class="info-item"><label>Tradable</label><span style="color:${info.tradable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.tradable ? 'Yes' : 'No'}</span></div><div class="info-item"><label>Shortable</label><span style="color:${info.shortable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.shortable ? 'Yes' : 'No'}</span></div></div></div>`; }
+        function renderCompanyInfo(item) {
+            const info = item.companyInfo;
+            if (!info || info.error) {
+                return `
+                <div class="company-info-layout">
+                    <div class="company-hero">
+                        <div class="company-hero-main">
+                            <div class="company-hero-ticker">${item.ticker}</div>
+                            <div class="company-hero-name">${item.companyName || ''}</div>
+                        </div>
+                        <div class="company-hero-meta">
+                            <span class="company-hero-chip">Profile unavailable</span>
+                        </div>
+                    </div>
+                    <div class="company-panels">
+                        <div class="company-panel company-panel-snapshot">
+                            <h4>Snapshot</h4>
+                            <p style="color: var(--accent-red);">Unable to load company profile right now.</p>
+                        </div>
+                        <div class="company-panel company-panel-bottomline">
+                            <div class="company-panel-bottomline-inner">
+                                <div class="bottomline-header">
+                                    <div class="verdict-card verdict-card-wait">
+                                        <div class="verdict-label">Buy the dip</div>
+                                        <div class="verdict-main">Wait</div>
+                                        <div class="verdict-score">— % certainty</div>
+                                    </div>
+                                    <div class="bottomline-copy">
+                                        <h4>Bottom Line</h4>
+                                        <p>AI verdict coming soon. Once Grok analysis is wired in, this panel will show a clear buy / no-buy call and certainty score for this ticker.</p>
+                                    </div>
+                                </div>
+                                <div class="info-grid">
+                                    <div class="info-item"><label>Exchange</label><span>N/A</span></div>
+                                    <div class="info-item"><label>Industry</label><span>N/A</span></div>
+                                    <div class="info-item"><label>Tradable</label><span>N/A</span></div>
+                                    <div class="info-item"><label>Shortable</label><span>N/A</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
 
-        async function toggleCompanyInfo(id) { const item = parsedData.find(d => d.id === id); if (!item) return; item.expanded = !item.expanded; renderTable(); if (item.expanded && !item.companyInfo) await fetchCompanyInfo(item); }
-        async function fetchCompanyInfo(item) { let info = {}; try { const res = await fetch(`${ALPACA_TRADING_URL}/assets/${item.ticker}`, { headers: { 'APCA-API-KEY-ID': ALPACA_API_KEY, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY } }); if (res.ok) { const asset = await res.json(); info = { exchange: asset.exchange, tradable: asset.tradable, shortable: asset.shortable }; } } catch (e) {} try { const res = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${item.ticker}&token=${FINNHUB_API_KEY}`); if (res.ok) { const profile = await res.json(); if (profile.finnhubIndustry) { info.industry = profile.finnhubIndustry; info.weburl = profile.weburl; info.description = `${profile.name || item.companyName} operates in ${profile.finnhubIndustry}.`; } } } catch (e) {} item.companyInfo = Object.keys(info).length ? info : { error: true }; renderTable(); }
+            return `
+            <div class="company-info-layout">
+                <div class="company-hero">
+                    <div class="company-hero-main">
+                        <div class="company-hero-ticker">${item.ticker}</div>
+                        <div class="company-hero-name">${item.companyName || ''}</div>
+                    </div>
+                    <div class="company-hero-meta">
+                        ${info.industry ? `<span class="company-hero-chip">${info.industry}</span>` : ''}
+                        ${info.exchange ? `<span class="company-hero-chip">${info.exchange}</span>` : ''}
+                    </div>
+                </div>
+                <div class="company-panels">
+                    <div class="company-panel company-panel-snapshot">
+                        <h4>Snapshot</h4>
+                        <p>${info.description || 'No description available.'}</p>
+                        ${info.weburl ? `<p style="margin-top:10px;"><a href="${info.weburl}" target="_blank">🌐 Website</a></p>` : ''}
+                    </div>
+                    <div class="company-panel company-panel-bottomline">
+                        <div class="company-panel-bottomline-inner">
+                            <div class="bottomline-header">
+                                <div class="verdict-card verdict-card-wait">
+                                    <div class="verdict-label">Buy the dip</div>
+                                    <div class="verdict-main">Wait</div>
+                                    <div class="verdict-score">— % certainty</div>
+                                </div>
+                                <div class="bottomline-copy">
+                                    <h4>Bottom Line</h4>
+                                    <p>AI verdict coming soon. For now, this trades on ${info.exchange || 'its primary exchange'} in the ${info.industry || 'listed'} space; use your thesis and the price action in the table until Grok analysis is integrated.</p>
+                                </div>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item"><label>Exchange</label><span>${info.exchange || 'N/A'}</span></div>
+                                <div class="info-item"><label>Industry</label><span>${info.industry || 'N/A'}</span></div>
+                                <div class="info-item"><label>Tradable</label><span style="color:${info.tradable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.tradable ? 'Yes' : 'No'}</span></div>
+                                <div class="info-item"><label>Shortable</label><span style="color:${info.shortable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.shortable ? 'Yes' : 'No'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
 
-        function updateDate(id, newDate) { const item = parsedData.find(d => d.id === id); if (item) { item.date = newDate; renderTable(); autoSave(); } }
-        function updateCurrentPrice(id, newPrice) { const item = parsedData.find(d => d.id === id); if (item && newPrice) { item.currentPrice = parseFloat(newPrice); renderTable(); autoSave(); } }
-        function removeRow(id) { parsedData = parsedData.filter(d => d.id !== id); renderTable(); showStatus('Removed', 'info'); autoSave(); }
-        function clearAll() { if (parsedData.length === 0) { showStatus('Nothing to clear', 'error'); return; } if (confirm('Clear all data?')) { parsedData = []; renderTable(); showStatus('Cleared', 'info'); autoSave(); } }
-        function refreshPrices() { if (parsedData.length === 0) { showStatus('No data', 'error'); return; } showStatus('Refreshing...', 'info'); parsedData.forEach(item => item.currentPrice = null); renderTable(); fetchCurrentPrices(parsedData); }
-        function exportToCSV() { if (parsedData.length === 0) { showStatus('No data', 'error'); return; } const headers = ['#', 'Date', 'Ticker', 'Company', 'Price', 'Current', '% Change']; const rows = parsedData.map((item, i) => { const change = calculateChange(item.price, item.currentPrice); return [i + 1, item.date, item.ticker, `"${item.companyName}"`, item.price, item.currentPrice || '', change ? change.toFixed(2) + '%' : ''].join(','); }); downloadCSV([headers.join(','), ...rows].join('\n'), 'stock_comparison'); }
-        function downloadCSV(csv, name) { const blob = new Blob([csv], { type: 'text/csv' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${name}_${new Date().toISOString().split('T')[0]}.csv`; link.click(); showStatus('Exported', 'success'); }
+        async function toggleCompanyInfo(id) {
+            const item = parsedData.find(d => d.id === id);
+            if (!item) return;
+            item.expanded = !item.expanded;
+            renderTable();
+            if (item.expanded && !item.companyInfo) await fetchCompanyInfo(item);
+        }
+        async function fetchCompanyInfo(item) {
+            let info = {};
+            try {
+                const res = await fetch(`${ALPACA_TRADING_URL}/assets/${item.ticker}`, {
+                    headers: {
+                        'APCA-API-KEY-ID': ALPACA_API_KEY,
+                        'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
+                    }
+                });
+                if (res.ok) {
+                    const asset = await res.json();
+                    info = { exchange: asset.exchange, tradable: asset.tradable, shortable: asset.shortable };
+                }
+            } catch (e) {}
+            try {
+                const res = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${item.ticker}&token=${FINNHUB_API_KEY}`);
+                if (res.ok) {
+                    const profile = await res.json();
+                    if (profile.finnhubIndustry) {
+                        info.industry = profile.finnhubIndustry;
+                        info.weburl = profile.weburl;
+                        info.description = `${profile.name || item.companyName} operates in ${profile.finnhubIndustry}.`;
+                    }
+                }
+            } catch (e) {}
+            item.companyInfo = Object.keys(info).length ? info : { error: true };
+            renderTable();
+        }
+
+        function updateDate(id, newDate) {
+            const item = parsedData.find(d => d.id === id);
+            if (item) {
+                item.date = newDate;
+                renderTable();
+                autoSave();
+            }
+        }
+        function updateCurrentPrice(id, newPrice) {
+            const item = parsedData.find(d => d.id === id);
+            if (item && newPrice) {
+                item.currentPrice = parseFloat(newPrice);
+                renderTable();
+                autoSave();
+            }
+        }
+        function removeRow(id) {
+            parsedData = parsedData.filter(d => d.id !== id);
+            renderTable();
+            showStatus('Removed', 'info');
+            autoSave();
+        }
+        function clearAll() {
+            if (parsedData.length === 0) { showStatus('Nothing to clear', 'error'); return; }
+            if (confirm('Clear all data?')) {
+                parsedData = [];
+                renderTable();
+                showStatus('Cleared', 'info');
+                autoSave();
+            }
+        }
+        function refreshPrices() {
+            if (parsedData.length === 0) { showStatus('No data', 'error'); return; }
+            showStatus('Refreshing...', 'info');
+            parsedData.forEach(item => item.currentPrice = null);
+            renderTable();
+            fetchCurrentPrices(parsedData);
+        }
+        function exportToCSV() {
+            if (parsedData.length === 0) { showStatus('No data', 'error'); return; }
+            const headers = ['#', 'Date', 'Ticker', 'Company', 'Price', 'Current', '% Change'];
+            const rows = parsedData.map((item, i) => {
+                const change = calculateChange(item.price, item.currentPrice);
+                return [
+                    i + 1,
+                    item.date,
+                    item.ticker,
+                    `"${item.companyName}"`,
+                    item.price,
+                    item.currentPrice || '',
+                    change ? change.toFixed(2) + '%' : ''
+                ].join(',');
+            });
+            downloadCSV([headers.join(','), ...rows].join('\n'), 'stock_comparison');
+        }
+        function downloadCSV(csv, name) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${name}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            showStatus('Exported', 'success');
+        }
 
         // INSIDER TRACKING
-        async function loadInsiderData() { try { showInsiderStatus('Loading...', 'info'); const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_ID}/values/InsiderTrades?key=${GOOGLE_API_KEY}`); if (res.ok) { const data = await res.json(); const rows = data.values || []; const dataRows = rows.length > 0 && rows[0][0] === 'id' ? rows.slice(1) : rows; if (dataRows.length > 0) { insiderData = dataRows.map(row => ({ id: parseInt(row[0]) || 0, date: row[1] || '', ticker: row[2] || '', companyName: row[3] || '', news: row[4] || '', insider: row[5] || '', amount: row[6] || '', alertPrice: row[7] ? parseFloat(row[7]) : null, currentPrice: row[8] ? parseFloat(row[8]) : null, expanded: false, companyInfo: null })); renderInsiderTable(); showInsiderStatus(`Loaded ${insiderData.length} trades`, 'success'); fetchInsiderPrices(); } else { renderInsiderTable(); showInsiderStatus('No trades yet', 'info'); } } } catch (e) { showInsiderStatus('Connection error', 'error'); } }
+        async function loadInsiderData() {
+            try {
+                showInsiderStatus('Loading...', 'info');
+                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_ID}/values/InsiderTrades?key=${GOOGLE_API_KEY}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const rows = data.values || [];
+                    const dataRows = rows.length > 0 && rows[0][0] === 'id' ? rows.slice(1) : rows;
+                    if (dataRows.length > 0) {
+                        insiderData = dataRows.map(row => ({
+                            id: parseInt(row[0]) || 0,
+                            date: row[1] || '',
+                            ticker: row[2] || '',
+                            companyName: row[3] || '',
+                            news: row[4] || '',
+                            insider: row[5] || '',
+                            amount: row[6] || '',
+                            alertPrice: row[7] ? parseFloat(row[7]) : null,
+                            currentPrice: row[8] ? parseFloat(row[8]) : null,
+                            expanded: false,
+                            companyInfo: null
+                        }));
+                        renderInsiderTable();
+                        showInsiderStatus(`Loaded ${insiderData.length} trades`, 'success');
+                        fetchInsiderPrices();
+                    } else {
+                        renderInsiderTable();
+                        showInsiderStatus('No trades yet', 'info');
+                    }
+                }
+            } catch (e) {
+                showInsiderStatus('Connection error', 'error');
+            }
+        }
 
-        async function fetchInsiderPrices() { for (const item of insiderData) { if (item.currentPrice === null || isNaN(item.currentPrice)) { try { const res = await fetch(`${ALPACA_DATA_URL}/stocks/${item.ticker}/trades/latest`, { headers: { 'APCA-API-KEY-ID': ALPACA_API_KEY, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY } }); if (res.ok) { const data = await res.json(); if (data.trade?.p) item.currentPrice = data.trade.p; } } catch (e) {} renderInsiderTable(); await new Promise(r => setTimeout(r, 150)); } } }
-        function refreshInsiderPrices() { if (insiderData.length === 0) { showInsiderStatus('No data', 'error'); return; } showInsiderStatus('Refreshing...', 'info'); insiderData.forEach(item => item.currentPrice = null); renderInsiderTable(); fetchInsiderPrices(); }
+        async function fetchInsiderPrices() {
+            for (const item of insiderData) {
+                if (item.currentPrice === null || isNaN(item.currentPrice)) {
+                    try {
+                        const res = await fetch(`${ALPACA_DATA_URL}/stocks/${item.ticker}/trades/latest`, {
+                            headers: {
+                                'APCA-API-KEY-ID': ALPACA_API_KEY,
+                                'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
+                            }
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.trade?.p) item.currentPrice = data.trade.p;
+                        }
+                    } catch (e) {}
+                    renderInsiderTable();
+                    await new Promise(r => setTimeout(r, 150));
+                }
+            }
+        }
+        function refreshInsiderPrices() {
+            if (insiderData.length === 0) { showInsiderStatus('No data', 'error'); return; }
+            showInsiderStatus('Refreshing...', 'info');
+            insiderData.forEach(item => item.currentPrice = null);
+            renderInsiderTable();
+            fetchInsiderPrices();
+        }
 
-        async function toggleInsiderCompanyInfo(id) { const item = insiderData.find(d => d.id === id); if (!item) return; item.expanded = !item.expanded; renderInsiderTable(); if (item.expanded && !item.companyInfo) await fetchInsiderCompanyInfo(item); }
-        async function fetchInsiderCompanyInfo(item) { let info = {}; try { const res = await fetch(`${ALPACA_TRADING_URL}/assets/${item.ticker}`, { headers: { 'APCA-API-KEY-ID': ALPACA_API_KEY, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY } }); if (res.ok) { const asset = await res.json(); info = { exchange: asset.exchange, tradable: asset.tradable, shortable: asset.shortable }; } } catch (e) {} try { const res = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${item.ticker}&token=${FINNHUB_API_KEY}`); if (res.ok) { const profile = await res.json(); if (profile.finnhubIndustry) { info.industry = profile.finnhubIndustry; info.weburl = profile.weburl; info.description = `${profile.name || item.companyName} operates in ${profile.finnhubIndustry}.`; } } } catch (e) {} item.companyInfo = Object.keys(info).length ? info : { error: true }; renderInsiderTable(); }
-        function renderInsiderCompanyInfo(item) { const info = item.companyInfo; if (!info || info.error) return '<p style="color: var(--accent-red);">Unable to load info</p>'; return `<div class="company-info-section"><h4>📋 Summary</h4><p>${info.description || 'No description available.'}</p>${info.weburl ? `<p style="margin-top:10px;"><a href="${info.weburl}" target="_blank">🌐 Website</a></p>` : ''}</div><div class="company-info-section"><h4>📊 Trading Info</h4><div class="info-grid"><div class="info-item"><label>Exchange</label><span>${info.exchange || 'N/A'}</span></div><div class="info-item"><label>Industry</label><span>${info.industry || 'N/A'}</span></div><div class="info-item"><label>Tradable</label><span style="color:${info.tradable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.tradable ? 'Yes' : 'No'}</span></div><div class="info-item"><label>Shortable</label><span style="color:${info.shortable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.shortable ? 'Yes' : 'No'}</span></div></div></div>`; }
+        async function toggleInsiderCompanyInfo(id) {
+            const item = insiderData.find(d => d.id === id);
+            if (!item) return;
+            item.expanded = !item.expanded;
+            renderInsiderTable();
+            if (item.expanded && !item.companyInfo) await fetchInsiderCompanyInfo(item);
+        }
+        async function fetchInsiderCompanyInfo(item) {
+            let info = {};
+            try {
+                const res = await fetch(`${ALPACA_TRADING_URL}/assets/${item.ticker}`, {
+                    headers: {
+                        'APCA-API-KEY-ID': ALPACA_API_KEY,
+                        'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY
+                    }
+                });
+                if (res.ok) {
+                    const asset = await res.json();
+                    info = { exchange: asset.exchange, tradable: asset.tradable, shortable: asset.shortable };
+                }
+            } catch (e) {}
+            try {
+                const res = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${item.ticker}&token=${FINNHUB_API_KEY}`);
+                if (res.ok) {
+                    const profile = await res.json();
+                    if (profile.finnhubIndustry) {
+                        info.industry = profile.finnhubIndustry;
+                        info.weburl = profile.weburl;
+                        info.description = `${profile.name || item.companyName} operates in ${profile.finnhubIndustry}.`;
+                    }
+                }
+            } catch (e) {}
+            item.companyInfo = Object.keys(info).length ? info : { error: true };
+            renderInsiderTable();
+        }
+
+        function renderInsiderCompanyInfo(item) {
+            const info = item.companyInfo;
+            if (!info || info.error) {
+                return `
+                <div class="company-info-layout">
+                    <div class="company-hero">
+                        <div class="company-hero-main">
+                            <div class="company-hero-ticker">${item.ticker}</div>
+                            <div class="company-hero-name">${item.companyName || ''}</div>
+                        </div>
+                        <div class="company-hero-meta">
+                            <span class="company-hero-chip">Profile unavailable</span>
+                        </div>
+                    </div>
+                    <div class="company-panels">
+                        <div class="company-panel company-panel-snapshot">
+                            <h4>Snapshot</h4>
+                            <p style="color: var(--accent-red);">Unable to load company profile right now.</p>
+                        </div>
+                        <div class="company-panel company-panel-bottomline">
+                            <div class="company-panel-bottomline-inner">
+                                <div class="bottomline-header">
+                                    <div class="verdict-card verdict-card-wait">
+                                        <div class="verdict-label">Buy the dip</div>
+                                        <div class="verdict-main">Wait</div>
+                                        <div class="verdict-score">— % certainty</div>
+                                    </div>
+                                    <div class="bottomline-copy">
+                                        <h4>Bottom Line</h4>
+                                        <p>AI verdict coming soon. Once Grok is wired into insider flows, this panel will show a conviction score for following these buys.</p>
+                                    </div>
+                                </div>
+                                <div class="info-grid">
+                                    <div class="info-item"><label>Exchange</label><span>N/A</span></div>
+                                    <div class="info-item"><label>Industry</label><span>N/A</span></div>
+                                    <div class="info-item"><label>Tradable</label><span>N/A</span></div>
+                                    <div class="info-item"><label>Shortable</label><span>N/A</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div class="company-info-layout">
+                <div class="company-hero">
+                    <div class="company-hero-main">
+                        <div class="company-hero-ticker">${item.ticker}</div>
+                        <div class="company-hero-name">${item.companyName || ''}</div>
+                    </div>
+                    <div class="company-hero-meta">
+                        ${info.industry ? `<span class="company-hero-chip">${info.industry}</span>` : ''}
+                        ${info.exchange ? `<span class="company-hero-chip">${info.exchange}</span>` : ''}
+                    </div>
+                </div>
+                <div class="company-panels">
+                    <div class="company-panel company-panel-snapshot">
+                        <h4>Snapshot</h4>
+                        <p>${info.description || 'No description available.'}</p>
+                        ${info.weburl ? `<p style="margin-top:10px;"><a href="${info.weburl}" target="_blank">🌐 Website</a></p>` : ''}
+                    </div>
+                    <div class="company-panel company-panel-bottomline">
+                        <div class="company-panel-bottomline-inner">
+                            <div class="bottomline-header">
+                                <div class="verdict-card verdict-card-wait">
+                                    <div class="verdict-label">Buy the dip</div>
+                                    <div class="verdict-main">Wait</div>
+                                    <div class="verdict-score">— % certainty</div>
+                                </div>
+                                <div class="bottomline-copy">
+                                    <h4>Bottom Line</h4>
+                                    <p>AI insider verdict coming soon. For now, combine these trades with your thesis and the alert vs. current price gap shown in the table.</p>
+                                </div>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item"><label>Exchange</label><span>${info.exchange || 'N/A'}</span></div>
+                                <div class="info-item"><label>Industry</label><span>${info.industry || 'N/A'}</span></div>
+                                <div class="info-item"><label>Tradable</label><span style="color:${info.tradable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.tradable ? 'Yes' : 'No'}</span></div>
+                                <div class="info-item"><label>Shortable</label><span style="color:${info.shortable ? 'var(--accent-green)' : 'var(--accent-red)'}">${info.shortable ? 'Yes' : 'No'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
 
         function renderInsiderTable() {
-            const tbody = document.getElementById('insiderResultsBody'); const emptyState = document.getElementById('insiderEmptyState'); document.getElementById('insiderRowCount').textContent = `${insiderData.length} rows`;
-            if (insiderData.length === 0) { tbody.innerHTML = ''; emptyState.style.display = 'block'; return; } emptyState.style.display = 'none';
+            const tbody = document.getElementById('insiderResultsBody');
+            const emptyState = document.getElementById('insiderEmptyState');
+            document.getElementById('insiderRowCount').textContent = `${insiderData.length} rows`;
+            if (insiderData.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
             tbody.innerHTML = insiderData.map((item, index) => {
-                const change = item.alertPrice && item.currentPrice ? ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100 : null; const changeClass = change !== null ? (change >= 0 ? 'change-positive' : 'change-negative') : ''; const changeText = change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}%` : '—';
-                let currentPriceClass = ''; if (item.currentPrice && item.alertPrice) { currentPriceClass = item.currentPrice >= item.alertPrice ? 'price-positive' : 'price-negative'; }
-                const rowColor = getDateColor(item.date); const isExpanded = item.expanded || false;
+                const change = item.alertPrice && item.currentPrice ? ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100 : null;
+                const changeClass = change !== null ? (change >= 0 ? 'change-positive' : 'change-negative') : '';
+                const changeText = change !== null ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}%` : '—';
+                let currentPriceClass = '';
+                if (item.currentPrice && item.alertPrice) {
+                    currentPriceClass = item.currentPrice >= item.alertPrice ? 'price-positive' : 'price-negative';
+                }
+                const rowColor = getDateColor(item.date);
+                const isExpanded = item.expanded || false;
                 let html = `<tr style="background-color: ${rowColor};"><td>${index + 1}</td><td>${item.date}</td><td class="ticker-cell ${isExpanded ? 'expanded' : ''}" onclick="toggleInsiderCompanyInfo(${item.id})">${item.ticker}</td><td>${item.companyName}</td><td class="news-cell">${item.news}</td><td>${item.insider ? `<span class="insider-badge">${item.insider}</span>` : '—'}</td><td class="amount-cell">${item.amount || '—'}</td><td class="price-cell">${item.alertPrice ? '$' + item.alertPrice.toFixed(2) : '—'}</td><td class="price-cell ${currentPriceClass}">${item.currentPrice ? '$' + item.currentPrice.toFixed(2) : '<span class="loading"></span>'}</td><td class="${changeClass}">${changeText}</td></tr>`;
-                if (isExpanded) { html += `<tr class="company-info-row" style="background-color: ${rowColor};"><td colspan="10"><div class="company-info-content">${item.companyInfo ? renderInsiderCompanyInfo(item) : '<div class="company-info-loading"><span class="loading"></span> Loading...</div>'}</div></td></tr>`; }
+                if (isExpanded) {
+                    html += `<tr class="company-info-row" style="background-color: ${rowColor};"><td colspan="10"><div class="company-info-content">${item.companyInfo ? renderInsiderCompanyInfo(item) : '<div class="company-info-loading"><span class="loading"></span> Loading...</div>'}</div></td></tr>`;
+                }
                 return html;
             }).join('');
         }
 
-        function exportInsiderCSV() { if (insiderData.length === 0) { showInsiderStatus('No data', 'error'); return; } const headers = ['#', 'Date', 'Ticker', 'Company', 'News', 'Insider', 'Amount', 'Alert Price', 'Current', '% Change']; const rows = insiderData.map((item, i) => { const change = item.alertPrice && item.currentPrice ? ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100 : null; return [i + 1, item.date, item.ticker, `"${item.companyName}"`, `"${item.news}"`, item.insider, item.amount, item.alertPrice || '', item.currentPrice || '', change ? change.toFixed(2) + '%' : ''].join(','); }); downloadCSV([headers.join(','), ...rows].join('\n'), 'insider_trades'); }
+        function exportInsiderCSV() {
+            if (insiderData.length === 0) { showInsiderStatus('No data', 'error'); return; }
+            const headers = ['#', 'Date', 'Ticker', 'Company', 'News', 'Insider', 'Amount', 'Alert Price', 'Current', '% Change'];
+            const rows = insiderData.map((item, i) => {
+                const change = item.alertPrice && item.currentPrice ? ((item.currentPrice - item.alertPrice) / item.alertPrice) * 100 : null;
+                return [
+                    i + 1,
+                    item.date,
+                    item.ticker,
+                    `"${item.companyName}"`,
+                    `"${item.news}"`,
+                    item.insider,
+                    item.amount,
+                    item.alertPrice || '',
+                    item.currentPrice || '',
+                    change ? change.toFixed(2) + '%' : ''
+                ].join(',');
+            });
+            downloadCSV([headers.join(','), ...rows].join('\n'), 'insider_trades');
+        }
     </script>
 </body>
 </html>
